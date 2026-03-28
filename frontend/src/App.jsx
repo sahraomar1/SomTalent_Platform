@@ -12,13 +12,19 @@ const translations = {
     createAccount: 'Create Account',
     asJobSeeker: 'As Job Seeker',
     asEmployer: 'As Employer',
+    asAdmin: 'As Admin',
     dashboard: 'Dashboard',
     jobSeekerDashboard: 'Job Seeker Dashboard',
     employerDashboard: 'Employer Dashboard',
+    adminDashboard: 'Admin Dashboard',
     browseJobs: 'Browse Jobs',
     training: 'Training Modules',
     applications: 'My Applications',
     profile: 'Profile',
+    notifications: 'Notifications',
+    certificates: 'Certificates',
+    help: 'Help Center',
+    users: 'Users',
     logout: 'Logout',
     welcome: 'Welcome',
     fullName: 'Full Name',
@@ -33,8 +39,6 @@ const translations = {
     english: 'English',
     somali: 'Somali',
     resume: 'Resume',
-    photo: 'Photo',
-    companyLogo: 'Company Logo',
     saveProfile: 'Save Profile',
     postJob: 'Post Job',
     title: 'Job Title',
@@ -50,7 +54,6 @@ const translations = {
     screeningQuestions: 'Screening Questions',
     screeningPlaceholder: 'One question per line',
     apply: 'Apply',
-    coverLetter: 'Optional Cover Letter',
     answerQuestion: 'Answer the question',
     completeModule: 'Complete Module',
     completed: 'Completed - Certificate Issued',
@@ -58,6 +61,8 @@ const translations = {
     noJobs: 'No jobs available right now.',
     noApplications: 'No applications yet.',
     noModules: 'No training modules available yet.',
+    noNotifications: 'No notifications yet.',
+    noCertificates: 'No certificates yet.',
     filters: 'Filters',
     applyFilters: 'Apply Filters',
     keywordPlaceholder: 'Search title, company, description...',
@@ -79,115 +84,34 @@ const translations = {
     accepted: 'Accepted',
     pending: 'Pending',
     completedCourses: 'Completed Courses',
-    availableJobs: 'Available Jobs',
-    companyOverview: 'Company Overview',
-    manageApplicants: 'Manage Applicants',
-    trainingDesc: 'Build the skills needed for remote work and improve your employability.',
-    jobsDesc: 'Browse open roles, review requirements, and apply for opportunities that match your skills.',
-    applicationsDesc: 'Track your submitted applications and interview updates.',
-    employerDesc: 'Post jobs, manage applicants, and schedule interviews.',
+    certificatesCount: 'Certificates',
     saveSuccess: 'Profile updated successfully.',
-    loginWelcomeSeeker: 'Find jobs, complete training, and track your applications.',
-    loginWelcomeEmployer: 'Post opportunities and manage applicants professionally.',
     candidateAccepted: 'Candidate accepted. You can now schedule an interview.',
     candidateRejected: 'This application has been rejected.',
     interviewScheduled: 'Interview scheduled successfully.',
     alreadyApplied: 'You have already applied for this job.',
     viewResume: 'View Resume',
-    answers: 'Screening Answers'
-  },
-  so: {
-    appName: 'SomTalent',
-    tagline: 'Isku xirka hibada Somaliland iyo shaqooyinka fog ee caalamka',
-    joinLogin: 'Isdiiwaangeli / Gal',
-    login: 'Gal',
-    signUp: 'Isdiiwaangeli',
-    createAccount: 'Samee Akoon',
-    asJobSeeker: 'Sida Shaqo-doon',
-    asEmployer: 'Sida Loo-shaqeeye',
-    dashboard: 'Dashboard',
-    jobSeekerDashboard: 'Dashboard-ka Shaqo-doonka',
-    employerDashboard: 'Dashboard-ka Loo-shaqeeyaha',
-    browseJobs: 'Raadi Shaqooyin',
-    training: 'Kooxo Tababar',
-    applications: 'Codsiyadayda',
-    profile: 'Xogtayda',
-    logout: 'Ka bax',
-    welcome: 'Ku soo dhawoow',
-    fullName: 'Magaca oo Buuxa',
-    companyName: 'Magaca Shirkadda',
-    email: 'Iimayl',
-    phone: 'Lambarka Taleefanka',
-    password: 'Furaha Sirta',
-    skills: 'Xirfadaha (comma kala saar)',
-    workHistory: 'Khibradda Shaqo',
-    companyWebsite: 'Website-ka Shirkadda',
-    preferredLanguage: 'Luqadda La Doorbiday',
-    english: 'Ingiriis',
-    somali: 'Soomaali',
-    resume: 'CV',
-    photo: 'Sawir',
-    companyLogo: 'Astaanta Shirkadda',
-    saveProfile: 'Kaydi Xogta',
-    postJob: 'Ku dhaji Shaqo',
-    title: 'Magaca Shaqada',
-    category: 'Qaybta',
-    requiredSkills: 'Xirfadaha Loo Baahan Yahay',
-    minSalary: 'Mushaharka Ugu Yar',
-    maxSalary: 'Mushaharka Ugu Badan',
-    locationType: 'Nooca Goobta',
-    remote: 'Fog',
-    onsite: 'Goobta',
-    hybrid: 'Isku-dhafan',
-    description: 'Sharaxaad',
-    screeningQuestions: 'Su’aalaha Codsiga',
-    screeningPlaceholder: 'Hal su’aal khadkiiba',
-    apply: 'Codso',
-    coverLetter: 'Warqad Codsi Ikhtiyaari ah',
-    answerQuestion: 'Ka jawaab su’aasha',
-    completeModule: 'Dhammaystir Casharka',
-    completed: 'Waa la dhammaystiray - Shahaado waa la bixiyey',
-    verifyCompany: 'Xaqiiji Shirkadda',
-    noJobs: 'Shaqooyin lama helin hadda.',
-    noApplications: 'Wali codsiyo ma jiraan.',
-    noModules: 'Wali casharro ma jiraan.',
-    filters: 'Shaandheyn',
-    applyFilters: 'Mari Shaandheynta',
-    keywordPlaceholder: 'Raadi shaqo, shirkad, sharaxaad...',
-    skill: 'Xirfad',
-    allLocations: 'Dhammaan Goobaha',
-    minimumSalary: 'Mushaharka Ugu Yar',
-    matchScore: 'Heerka Isku Eegga',
-    status: 'Xaalad',
-    applied: 'La Codsaday',
-    interviewDate: 'Taariikhda Wareysiga',
-    shortlist: 'Liiska Gaaban',
-    accept: 'Aqbal',
-    reject: 'Diid',
-    scheduleInterview: 'Qorshee Wareysi',
-    totalJobs: 'Wadarta Shaqooyinka',
-    totalApplications: 'Wadarta Codsiyada',
-    shortlisted: 'Liiska Gaaban',
-    interviews: 'Wareysiyada',
-    accepted: 'La Aqbalay',
-    pending: 'Sugaya',
-    completedCourses: 'Casharrada La Dhammaystiray',
-    availableJobs: 'Shaqooyinka La Heli Karo',
-    companyOverview: 'Guudmarka Shirkadda',
-    manageApplicants: 'Maamul Codsadayaasha',
-    trainingDesc: 'Baro xirfadaha loo baahan yahay si aad ugu shaqeyso meel fog.',
-    jobsDesc: 'Raadi shaqooyinka furan, eeg shuruudaha, kuna codso kuwa ku habboon xirfadahaaga.',
-    applicationsDesc: 'La soco codsiyadaada iyo wararka wareysiga.',
-    employerDesc: 'Ku dhaji shaqooyin, maamul codsadayaasha, oo qorshee wareysiyo.',
-    saveSuccess: 'Xogta si guul leh ayaa loo cusboonaysiiyey.',
-    loginWelcomeSeeker: 'Raadi shaqooyin, dhammayso tababarka, oo la soco codsiyadaada.',
-    loginWelcomeEmployer: 'Ku dhaji fursado shaqo oo si xirfad leh u maamul codsadayaasha.',
-    candidateAccepted: 'Codsadahan waa la aqbalay. Hadda waxaad qorshayn kartaa wareysi.',
-    candidateRejected: 'Codsigan waa la diiday.',
-    interviewScheduled: 'Wareysiga si guul leh ayaa loo qorsheeyey.',
-    alreadyApplied: 'Hore ayaad ugu codsatay shaqadan.',
-    viewResume: 'Eeg CV-ga',
-    answers: 'Jawaabaha Su’aalaha'
+    answers: 'Screening Answers',
+    helpIntro: 'This platform helps job seekers apply for jobs, complete training, and track progress.',
+    faq1: 'How do I apply?',
+    faq1a: 'Open Browse Jobs, answer screening questions, then click Apply.',
+    faq2: 'How do I get a certificate?',
+    faq2a: 'Complete a training module and your certificate will appear in the Certificates tab.',
+    faq3: 'How does an employer review me?',
+    faq3a: 'The employer can review your profile, skills, resume, and your screening answers.',
+    totalUsers: 'Total Users',
+    totalJobSeekers: 'Job Seekers',
+    totalEmployers: 'Employers',
+    totalCertificates: 'Certificates',
+    issuedAt: 'Issued At',
+    markRead: 'Mark as read',
+    interviewType: 'Interview Type',
+    online: 'Online',
+    physical: 'Physical',
+    meetingLink: 'Meeting Link',
+    meetingLocation: 'Meeting Location',
+    interviewNotes: 'Interview Notes',
+    verified: 'Verified'
   }
 };
 
@@ -208,7 +132,6 @@ function App() {
     preferredLanguage: 'en'
   });
   const [signupResume, setSignupResume] = useState(null);
-  const [signupPhoto, setSignupPhoto] = useState(null);
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupMessage, setSignupMessage] = useState('');
   const [signupError, setSignupError] = useState('');
@@ -221,6 +144,10 @@ function App() {
   const [employerApplications, setEmployerApplications] = useState([]);
   const [modules, setModules] = useState([]);
   const [progress, setProgress] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [adminStats, setAdminStats] = useState(null);
+  const [adminUsers, setAdminUsers] = useState([]);
   const [dashboardData, setDashboardData] = useState(null);
 
   const [applyMessage, setApplyMessage] = useState('');
@@ -235,10 +162,12 @@ function App() {
     salaryMin: ''
   });
 
-  const [coverLetters, setCoverLetters] = useState({});
   const [interviewDates, setInterviewDates] = useState({});
+  const [interviewTypes, setInterviewTypes] = useState({});
+  const [interviewLinks, setInterviewLinks] = useState({});
+  const [interviewLocations, setInterviewLocations] = useState({});
+  const [interviewNotes, setInterviewNotes] = useState({});
   const [questionAnswers, setQuestionAnswers] = useState({});
-  const [expandedJobId, setExpandedJobId] = useState(null);
 
   const [profileForm, setProfileForm] = useState({
     name: '',
@@ -249,10 +178,9 @@ function App() {
     preferredLanguage: 'en'
   });
   const [profileResume, setProfileResume] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(null);
 
-  const lang = currentUser?.preferredLanguage || signupData.preferredLanguage || 'en';
-  const t = translations[lang];
+  const t = translations.en;
+  const text = (key, fallback) => t?.[key] || fallback;
 
   const completedModuleIds = useMemo(
     () => new Set(progress.filter((item) => item.completed).map((item) => item.moduleId)),
@@ -287,9 +215,17 @@ function App() {
   useEffect(() => {
     if (!isLoggedIn || !currentUser) return;
 
-    if (activeTab === 'dashboard') loadDashboard();
+    loadNotifications();
 
     if (currentUser.role === 'jobSeeker') {
+      if (activeTab === 'dashboard') {
+        loadDashboard();
+        loadJobs();
+        loadApplications();
+        loadModules();
+        loadProgress();
+        loadCertificates();
+      }
       if (activeTab === 'jobs') {
         loadJobs();
         loadApplications();
@@ -299,12 +235,7 @@ function App() {
         loadModules();
         loadProgress();
       }
-      if (activeTab === 'dashboard') {
-        loadJobs();
-        loadApplications();
-        loadModules();
-        loadProgress();
-      }
+      if (activeTab === 'certificates') loadCertificates();
     }
 
     if (currentUser.role === 'employer') {
@@ -312,6 +243,11 @@ function App() {
         loadDashboard();
         loadEmployerApplications();
       }
+    }
+
+    if (currentUser.role === 'admin') {
+      if (activeTab === 'dashboard') loadAdminDashboard();
+      if (activeTab === 'users') loadAdminUsers();
     }
   }, [activeTab, isLoggedIn, currentUser]);
 
@@ -328,11 +264,9 @@ function App() {
       if (filters.salaryMin) params.append('salaryMin', filters.salaryMin);
 
       if ([...params.keys()].length > 0) url += `?${params.toString()}`;
-
       const data = await fetchJSON(url);
       setJobs(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setJobs([]);
     }
   };
@@ -341,8 +275,7 @@ function App() {
     try {
       const data = await fetchJSON(`${API}/my-applications?email=${currentUser.email}`);
       setApplications(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setApplications([]);
     }
   };
@@ -351,8 +284,7 @@ function App() {
     try {
       const data = await fetchJSON(`${API}/applications/employer/${currentUser.email}`);
       setEmployerApplications(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setEmployerApplications([]);
     }
   };
@@ -361,8 +293,7 @@ function App() {
     try {
       const data = await fetchJSON(`${API}/training-modules`);
       setModules(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setModules([]);
     }
   };
@@ -371,9 +302,26 @@ function App() {
     try {
       const data = await fetchJSON(`${API}/training-progress/${currentUser.email}`);
       setProgress(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setProgress([]);
+    }
+  };
+
+  const loadCertificates = async () => {
+    try {
+      const data = await fetchJSON(`${API}/certificates/${currentUser.email}`);
+      setCertificates(Array.isArray(data) ? data : []);
+    } catch {
+      setCertificates([]);
+    }
+  };
+
+  const loadNotifications = async () => {
+    try {
+      const data = await fetchJSON(`${API}/notifications/${currentUser.email}`);
+      setNotifications(Array.isArray(data) ? data : []);
+    } catch {
+      setNotifications([]);
     }
   };
 
@@ -385,9 +333,26 @@ function App() {
           : `${API}/dashboard/jobseeker/${currentUser.email}`;
       const data = await fetchJSON(url);
       setDashboardData(data);
-    } catch (error) {
-      console.error(error);
+    } catch {
       setDashboardData(null);
+    }
+  };
+
+  const loadAdminDashboard = async () => {
+    try {
+      const data = await fetchJSON(`${API}/dashboard/admin`);
+      setAdminStats(data);
+    } catch {
+      setAdminStats(null);
+    }
+  };
+
+  const loadAdminUsers = async () => {
+    try {
+      const data = await fetchJSON(`${API}/admin/users`);
+      setAdminUsers(Array.isArray(data) ? data : []);
+    } catch {
+      setAdminUsers([]);
     }
   };
 
@@ -430,11 +395,10 @@ function App() {
       formData.append('preferredLanguage', signupData.preferredLanguage);
 
       if (signupResume) formData.append('resume', signupResume);
-      if (signupPhoto) formData.append('photo', signupPhoto);
 
       await fetchJSON(`${API}/signup`, { method: 'POST', body: formData });
 
-      setSignupMessage(lang === 'so' ? 'Isdiiwaangelin guul leh.' : 'Signed up successfully.');
+      setSignupMessage('Signed up successfully.');
       setSignupData({
         name: '',
         email: '',
@@ -443,10 +407,9 @@ function App() {
         skills: '',
         workHistory: '',
         companyWebsite: '',
-        preferredLanguage: signupData.preferredLanguage
+        preferredLanguage: 'en'
       });
       setSignupResume(null);
-      setSignupPhoto(null);
     } catch (error) {
       setSignupError(error.message);
     } finally {
@@ -476,7 +439,6 @@ function App() {
         companyWebsite: data.user.companyWebsite || '',
         preferredLanguage: data.user.preferredLanguage || 'en'
       });
-
       setActiveTab('dashboard');
       setLoginData({ email: '', password: '' });
     } catch (error) {
@@ -489,46 +451,31 @@ function App() {
     setCurrentUser(null);
     setIsLoggedIn(false);
     setActiveTab('join');
-    setJobs([]);
-    setApplications([]);
-    setEmployerApplications([]);
-    setModules([]);
-    setProgress([]);
-    setDashboardData(null);
-    setApplyMessage('');
   };
 
   const handleApply = async (job) => {
-    setApplyMessage('');
     try {
       const answersForJob = (job.questions || []).map((question, index) => ({
         question,
         answer: questionAnswers[job._id]?.[index] || ''
       }));
 
-      const missingAnswer = answersForJob.some(
-        (item) => item.question && !String(item.answer || '').trim()
-      );
-
+      const missingAnswer = answersForJob.some((item) => item.question && !String(item.answer || '').trim());
       if (missingAnswer) {
-        setApplyMessage(lang === 'so' ? 'Fadlan ka jawaab dhammaan su’aalaha.' : 'Please answer all screening questions.');
+        setApplyMessage('Please answer all screening questions.');
         return;
       }
 
       await fetchJSON(`${API}/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jobId: job._id,
-          applicantEmail: currentUser.email,
-          answers: answersForJob
-        })
+        body: JSON.stringify({ jobId: job._id, applicantEmail: currentUser.email, answers: answersForJob })
       });
 
-      setApplyMessage(lang === 'so' ? 'Codsiga waa la diray.' : 'Application submitted successfully.');
-      await loadApplications();
-      await loadJobs();
-      setExpandedJobId(null);
+      setApplyMessage('Application submitted successfully.');
+      loadApplications();
+      loadJobs();
+      loadNotifications();
     } catch (error) {
       setApplyMessage(error.message);
     }
@@ -557,7 +504,6 @@ function App() {
       });
 
       form.reset();
-      alert(lang === 'so' ? 'Shaqada waa la dhajiyey.' : 'Job posted successfully.');
       loadDashboard();
     } catch (error) {
       alert(error.message);
@@ -571,9 +517,8 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
       });
-
-      await loadEmployerApplications();
-      await loadDashboard();
+      loadEmployerApplications();
+      loadDashboard();
     } catch (error) {
       alert(error.message);
     }
@@ -586,12 +531,16 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           status: 'Interview Scheduled',
-          interviewDate: interviewDates[id] || ''
+          interviewDate: interviewDates[id] || '',
+          interviewType: interviewTypes[id] || '',
+          interviewLink: interviewLinks[id] || '',
+          interviewLocation: interviewLocations[id] || '',
+          interviewNotes: interviewNotes[id] || ''
         })
       });
-
-      await loadEmployerApplications();
-      await loadDashboard();
+      loadEmployerApplications();
+      loadDashboard();
+      loadNotifications();
     } catch (error) {
       alert(error.message);
     }
@@ -605,8 +554,9 @@ function App() {
         body: JSON.stringify({ userEmail: currentUser.email, moduleId })
       });
       loadProgress();
+      loadCertificates();
       loadDashboard();
-      alert(lang === 'so' ? 'Casharka waa la dhammaystiray.' : 'Module completed.');
+      loadNotifications();
     } catch (error) {
       alert(error.message);
     }
@@ -633,8 +583,6 @@ function App() {
         formData.append('companyWebsite', profileForm.companyWebsite);
       }
 
-      if (profilePhoto) formData.append('photo', profilePhoto);
-
       const updatedUser = await fetchJSON(`${API}/profile/${currentUser.email}`, {
         method: 'PUT',
         body: formData
@@ -642,9 +590,7 @@ function App() {
 
       setCurrentUser(updatedUser);
       sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      setProfileMessage(translations[updatedUser.preferredLanguage || 'en'].saveSuccess);
-      setProfileResume(null);
-      setProfilePhoto(null);
+      setProfileMessage('Profile updated successfully.');
     } catch (error) {
       setProfileError(error.message);
     }
@@ -657,10 +603,15 @@ function App() {
       });
       setCurrentUser(data.employer);
       sessionStorage.setItem('currentUser', JSON.stringify(data.employer));
-      alert(lang === 'so' ? 'Shirkadda waa la xaqiijiyey.' : 'Company verified.');
+      loadNotifications();
     } catch (error) {
       alert(error.message);
     }
+  };
+
+  const markNotificationRead = async (id) => {
+    await fetchJSON(`${API}/notifications/read/${id}`, { method: 'PUT' });
+    loadNotifications();
   };
 
   const getStatusBadgeStyle = (status) => {
@@ -678,510 +629,542 @@ function App() {
       padding: '8px 12px',
       borderRadius: 999,
       fontWeight: 700,
-      fontSize: '13px',
-      whiteSpace: 'nowrap'
+      fontSize: '13px'
     };
   };
 
-  const renderJobSeekerDashboard = () => (
-    <div style={contentContainerStyle}>
-      <h2 style={sectionTitleStyle}>{t.jobSeekerDashboard}</h2>
+  const navForRole = () => {
+    if (!isLoggedIn) return null;
 
-      {dashboardData && (
-        <div style={statsGridStyle}>
-          <div style={statCardStyle}><h4>{t.totalApplications}</h4><p style={statNumberStyle}>{dashboardData.totalApplications ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.accepted}</h4><p style={statNumberStyle}>{dashboardData.accepted ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.pending}</h4><p style={statNumberStyle}>{dashboardData.pending ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.completedCourses}</h4><p style={statNumberStyle}>{dashboardData.completedCourses ?? 0}</p></div>
-        </div>
-      )}
+    if (currentUser.role === 'jobSeeker') {
+      return (
+        <>
+          <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>{text('jobSeekerDashboard', 'Job Seeker Dashboard')}</button>
+          <button onClick={() => setActiveTab('jobs')} style={navButtonStyle}>{text('browseJobs', 'Browse Jobs')}</button>
+          <button onClick={() => setActiveTab('training')} style={navButtonStyle}>{text('training', 'Training')}</button>
+          <button onClick={() => setActiveTab('applications')} style={navButtonStyle}>{text('applications', 'Applications')}</button>
+          <button onClick={() => setActiveTab('certificates')} style={navButtonStyle}>{text('certificates', 'Certificates')}</button>
+          <button onClick={() => setActiveTab('notifications')} style={navButtonStyle}>{text('notifications', 'Notifications')}</button>
+          <button onClick={() => setActiveTab('help')} style={navButtonStyle}>{text('help', 'Help Center')}</button>
+          <button onClick={() => setActiveTab('profile')} style={navButtonStyle}>{text('profile', 'Profile')}</button>
+        </>
+      );
+    }
 
-      <div style={dashboardGridStyle}>
-        <div style={cardStyle}>
-          <h3>{t.availableJobs}</h3>
-          <p>{t.jobsDesc}</p>
-          <p><strong>{t.totalJobs}:</strong> {jobs.length}</p>
-          <button onClick={() => setActiveTab('jobs')} style={primaryButtonStyle}>{t.browseJobs}</button>
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.training}</h3>
-          <p>{t.trainingDesc}</p>
-          <p><strong>{t.completedCourses}:</strong> {progress.filter((p) => p.completed).length}</p>
-          <button onClick={() => setActiveTab('training')} style={primaryButtonStyle}>{t.training}</button>
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.applications}</h3>
-          <p>{t.applicationsDesc}</p>
-          <p><strong>{t.totalApplications}:</strong> {applications.length}</p>
-          <button onClick={() => setActiveTab('applications')} style={primaryButtonStyle}>{t.applications}</button>
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.profile}</h3>
-          <p>{t.loginWelcomeSeeker}</p>
-          <button onClick={() => setActiveTab('profile')} style={primaryButtonStyle}>{t.profile}</button>
-        </div>
-      </div>
-    </div>
-  );
+    if (currentUser.role === 'employer') {
+      return (
+        <>
+          <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>{text('employerDashboard', 'Employer Dashboard')}</button>
+          <button onClick={() => setActiveTab('employer')} style={navButtonStyle}>{text('postJob', 'Post Job')}</button>
+          <button onClick={() => setActiveTab('notifications')} style={navButtonStyle}>{text('notifications', 'Notifications')}</button>
+          <button onClick={() => setActiveTab('profile')} style={navButtonStyle}>{text('profile', 'Profile')}</button>
+        </>
+      );
+    }
 
-  const renderEmployerDashboard = () => (
-    <div style={contentContainerStyle}>
-      <h2 style={sectionTitleStyle}>{t.employerDashboard}</h2>
-
-      {dashboardData && (
-        <div style={statsGridStyle}>
-          <div style={statCardStyle}><h4>{t.totalJobs}</h4><p style={statNumberStyle}>{dashboardData.totalJobs ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.totalApplications}</h4><p style={statNumberStyle}>{dashboardData.totalApplications ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.shortlisted}</h4><p style={statNumberStyle}>{dashboardData.shortlisted ?? 0}</p></div>
-          <div style={statCardStyle}><h4>{t.interviews}</h4><p style={statNumberStyle}>{dashboardData.interviews ?? 0}</p></div>
-        </div>
-      )}
-
-      <div style={dashboardGridStyle}>
-        <div style={cardStyle}>
-          <h3>{t.companyOverview}</h3>
-          <p>{t.employerDesc}</p>
-          <p><strong>Verified:</strong> {currentUser?.isVerified ? 'Yes' : 'No'}</p>
-          {!currentUser?.isVerified && <button onClick={verifyEmployer} style={primaryButtonStyle}>{t.verifyCompany}</button>}
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.postJob}</h3>
-          <p>{lang === 'so' ? 'Ku dar shaqo cusub si aad u hesho codsadayaal.' : 'Create a new job opportunity for applicants.'}</p>
-          <button onClick={() => setActiveTab('employer')} style={primaryButtonStyle}>{t.postJob}</button>
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.manageApplicants}</h3>
-          <p>{lang === 'so' ? 'Eeg codsadayaasha oo maamul xaaladahooda.' : 'Review applicants and manage their status.'}</p>
-          <p><strong>{t.totalApplications}:</strong> {employerApplications.length}</p>
-          <button onClick={() => setActiveTab('employer')} style={primaryButtonStyle}>{t.manageApplicants}</button>
-        </div>
-        <div style={cardStyle}>
-          <h3>{t.profile}</h3>
-          <p>{t.loginWelcomeEmployer}</p>
-          <button onClick={() => setActiveTab('profile')} style={primaryButtonStyle}>{t.profile}</button>
-        </div>
-      </div>
-    </div>
-  );
+    return (
+      <>
+        <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>{text('adminDashboard', 'Admin Dashboard')}</button>
+        <button onClick={() => setActiveTab('users')} style={navButtonStyle}>{text('users', 'Users')}</button>
+        <button onClick={() => setActiveTab('notifications')} style={navButtonStyle}>{text('notifications', 'Notifications')}</button>
+      </>
+    );
+  };
 
   return (
     <div style={pageStyle}>
       <header style={headerStyle}>
-        <h1 style={{ margin: 0, fontSize: '2.8rem' }}>{t.appName}</h1>
-        <p style={{ marginTop: 10, fontSize: '1.1rem' }}>{t.tagline}</p>
+        <h1 style={{ margin: 0 }}>{text('appName', 'SomTalent')}</h1>
+        <p style={{ marginTop: 10 }}>{text('tagline', 'Connecting Somaliland talent to remote jobs worldwide')}</p>
         {isLoggedIn && currentUser && (
           <div style={{ marginTop: 14 }}>
-            <span>{t.welcome}, {currentUser.name}</span>
-            <button onClick={handleLogout} style={{ ...smallButtonStyle, marginLeft: 12 }}>{t.logout}</button>
+            <span>{text('welcome', 'Welcome')}, {currentUser.name}</span>
+            <button onClick={handleLogout} style={{ ...smallButtonStyle, marginLeft: 12 }}>{text('logout', 'Logout')}</button>
           </div>
         )}
       </header>
 
       <div style={navStyle}>
-        {!isLoggedIn && <button onClick={() => setActiveTab('join')} style={navButtonStyle}>{t.joinLogin}</button>}
-
-        {isLoggedIn && currentUser?.role === 'jobSeeker' && (
-          <>
-            <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>{t.jobSeekerDashboard}</button>
-            <button onClick={() => setActiveTab('jobs')} style={navButtonStyle}>{t.browseJobs}</button>
-            <button onClick={() => setActiveTab('training')} style={navButtonStyle}>{t.training}</button>
-            <button onClick={() => setActiveTab('applications')} style={navButtonStyle}>{t.applications}</button>
-            <button onClick={() => setActiveTab('profile')} style={navButtonStyle}>{t.profile}</button>
-          </>
-        )}
-
-        {isLoggedIn && currentUser?.role === 'employer' && (
-          <>
-            <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>{t.employerDashboard}</button>
-            <button onClick={() => setActiveTab('employer')} style={navButtonStyle}>{t.manageApplicants}</button>
-            <button onClick={() => setActiveTab('profile')} style={navButtonStyle}>{t.profile}</button>
-          </>
-        )}
+        {!isLoggedIn && <button onClick={() => setActiveTab('join')} style={navButtonStyle}>{text('joinLogin', 'Join / Login')}</button>}
+        {navForRole()}
       </div>
 
       {!isLoggedIn && activeTab === 'join' && (
         <div style={centerContainerStyle}>
           <div style={cardStyle}>
-            <h2 style={sectionTitleStyle}>{t.createAccount}</h2>
+            <h2>{text('createAccount', 'Create Account')}</h2>
 
             <div style={{ marginBottom: 16 }}>
-              <button
-                onClick={() => setSignupRole('jobSeeker')}
-                style={{ ...smallButtonStyle, marginRight: 10, background: signupRole === 'jobSeeker' ? '#1e3a8a' : '#e2e8f0', color: signupRole === 'jobSeeker' ? 'white' : '#1e3a8a' }}
-              >
-                {t.asJobSeeker}
-              </button>
-              <button
-                onClick={() => setSignupRole('employer')}
-                style={{ ...smallButtonStyle, background: signupRole === 'employer' ? '#1e3a8a' : '#e2e8f0', color: signupRole === 'employer' ? 'white' : '#1e3a8a' }}
-              >
-                {t.asEmployer}
-              </button>
+              <button onClick={() => setSignupRole('jobSeeker')} style={{ ...smallButtonStyle, marginRight: 10 }}>{text('asJobSeeker', 'As Job Seeker')}</button>
+              <button onClick={() => setSignupRole('employer')} style={{ ...smallButtonStyle, marginRight: 10 }}>{text('asEmployer', 'As Employer')}</button>
+              <button onClick={() => setSignupRole('admin')} style={smallButtonStyle}>{text('asAdmin', 'As Admin')}</button>
             </div>
 
             <form onSubmit={handleSignup}>
-              <input name="name" value={signupData.name} onChange={handleSignupChange} placeholder={signupRole === 'jobSeeker' ? t.fullName : t.companyName} required style={inputStyle} />
-              <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder={t.email} required style={inputStyle} />
-              <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder={t.phone} style={inputStyle} />
-              <input name="password" type="password" value={signupData.password} onChange={handleSignupChange} placeholder={t.password} required style={inputStyle} />
+              <input name="name" value={signupData.name} onChange={handleSignupChange} placeholder={signupRole === 'jobSeeker' ? text('fullName', 'Full Name') : text('companyName', 'Company Name')} required style={inputStyle} />
+              <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder={text('email', 'Email')} required style={inputStyle} />
+              <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder={text('phone', 'Phone Number')} style={inputStyle} />
+              <input name="password" type="password" value={signupData.password} onChange={handleSignupChange} placeholder={text('password', 'Password')} required style={inputStyle} />
 
               {signupRole === 'jobSeeker' && (
                 <>
-                  <input name="skills" value={signupData.skills} onChange={handleSignupChange} placeholder={t.skills} style={inputStyle} />
-                  <textarea name="workHistory" value={signupData.workHistory} onChange={handleSignupChange} placeholder={t.workHistory} style={textareaStyle} />
-                  <label style={labelStyle}>{t.resume} *</label>
+                  <input name="skills" value={signupData.skills} onChange={handleSignupChange} placeholder={text('skills', 'Skills')} style={inputStyle} />
+                  <textarea name="workHistory" value={signupData.workHistory} onChange={handleSignupChange} placeholder={text('workHistory', 'Work History')} style={textareaStyle} />
+                  <label style={labelStyle}>{text('resume', 'Resume')}</label>
                   <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setSignupResume(e.target.files[0])} required style={inputStyle} />
-                  <label style={labelStyle}>{t.photo}</label>
-                  <input type="file" accept="image/*" onChange={(e) => setSignupPhoto(e.target.files[0])} style={inputStyle} />
                 </>
               )}
 
               {signupRole === 'employer' && (
-                <>
-                  <input name="companyWebsite" value={signupData.companyWebsite} onChange={handleSignupChange} placeholder={t.companyWebsite} style={inputStyle} />
-                  <label style={labelStyle}>{t.companyLogo}</label>
-                  <input type="file" accept="image/*" onChange={(e) => setSignupPhoto(e.target.files[0])} style={inputStyle} />
-                </>
+                <input name="companyWebsite" value={signupData.companyWebsite} onChange={handleSignupChange} placeholder={text('companyWebsite', 'Company Website')} style={inputStyle} />
               )}
 
-              <select name="preferredLanguage" value={signupData.preferredLanguage} onChange={handleSignupChange} style={inputStyle}>
-                <option value="en">{t.english}</option>
-                <option value="so">{t.somali}</option>
-              </select>
-
               <button type="submit" disabled={signupLoading} style={primaryButtonStyle}>
-                {signupLoading ? '...' : t.signUp}
+                {signupLoading ? '...' : text('signUp', 'Sign Up')}
               </button>
             </form>
 
             {signupMessage && <p style={{ color: 'green' }}>{signupMessage}</p>}
             {signupError && <p style={{ color: 'red' }}>{signupError}</p>}
 
-            <hr style={{ margin: '30px 0' }} />
+            <hr style={{ margin: '24px 0' }} />
 
-            <h2 style={sectionTitleStyle}>{t.login}</h2>
+            <h2>{text('login', 'Login')}</h2>
             <form onSubmit={handleLogin}>
-              <input name="email" type="email" value={loginData.email} onChange={handleLoginChange} placeholder={t.email} required style={inputStyle} />
-              <input name="password" type="password" value={loginData.password} onChange={handleLoginChange} placeholder={t.password} required style={inputStyle} />
-              <button type="submit" style={primaryButtonStyle}>{t.login}</button>
+              <input name="email" type="email" value={loginData.email} onChange={handleLoginChange} placeholder={text('email', 'Email')} required style={inputStyle} />
+              <input name="password" type="password" value={loginData.password} onChange={handleLoginChange} placeholder={text('password', 'Password')} required style={inputStyle} />
+              <button type="submit" style={primaryButtonStyle}>{text('login', 'Login')}</button>
             </form>
             {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
           </div>
         </div>
       )}
 
-      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'dashboard' && renderJobSeekerDashboard()}
-      {isLoggedIn && currentUser?.role === 'employer' && activeTab === 'dashboard' && renderEmployerDashboard()}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><h4>{text('totalApplications', 'Total Applications')}</h4><p style={statNumberStyle}>{dashboardData?.totalApplications ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('accepted', 'Accepted')}</h4><p style={statNumberStyle}>{dashboardData?.accepted ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('pending', 'Pending')}</h4><p style={statNumberStyle}>{dashboardData?.pending ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('completedCourses', 'Completed Courses')}</h4><p style={statNumberStyle}>{dashboardData?.completedCourses ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('certificatesCount', 'Certificates')}</h4><p style={statNumberStyle}>{dashboardData?.certificates ?? 0}</p></div>
+          </div>
+        </div>
+      )}
+
+      {isLoggedIn && currentUser?.role === 'employer' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><h4>{text('totalJobs', 'Total Jobs')}</h4><p style={statNumberStyle}>{dashboardData?.totalJobs ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalApplications', 'Total Applications')}</h4><p style={statNumberStyle}>{dashboardData?.totalApplications ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('shortlisted', 'Shortlisted')}</h4><p style={statNumberStyle}>{dashboardData?.shortlisted ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('interviews', 'Interviews')}</h4><p style={statNumberStyle}>{dashboardData?.interviews ?? 0}</p></div>
+          </div>
+        </div>
+      )}
+
+      {isLoggedIn && currentUser?.role === 'admin' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><h4>{text('totalUsers', 'Total Users')}</h4><p style={statNumberStyle}>{adminStats?.totalUsers ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalJobSeekers', 'Job Seekers')}</h4><p style={statNumberStyle}>{adminStats?.totalJobSeekers ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalEmployers', 'Employers')}</h4><p style={statNumberStyle}>{adminStats?.totalEmployers ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalJobs', 'Total Jobs')}</h4><p style={statNumberStyle}>{adminStats?.totalJobs ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalApplications', 'Total Applications')}</h4><p style={statNumberStyle}>{adminStats?.totalApplications ?? 0}</p></div>
+            <div style={statCardStyle}><h4>{text('totalCertificates', 'Certificates')}</h4><p style={statNumberStyle}>{adminStats?.totalCertificates ?? 0}</p></div>
+          </div>
+        </div>
+      )}
+
+      {isLoggedIn && currentUser?.role === 'admin' && activeTab === 'users' && (
+        <div style={contentContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('users', 'Users')}</h2>
+            {adminUsers.map((user) => (
+              <div key={user._id} style={{ padding: 12, borderBottom: '1px solid #e2e8f0' }}>
+                <strong>{user.name}</strong> — {user.email} — {user.role}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'jobs' && (
         <div style={contentContainerStyle}>
-          <h2 style={sectionTitleStyle}>{t.browseJobs}</h2>
-
           <div style={cardStyle}>
-            <h3>{t.filters}</h3>
-            <input name="keyword" value={filters.keyword} onChange={handleFilterChange} placeholder={t.keywordPlaceholder} style={inputStyle} />
-            <input name="skill" value={filters.skill} onChange={handleFilterChange} placeholder={t.skill} style={inputStyle} />
-            <input name="category" value={filters.category} onChange={handleFilterChange} placeholder={t.category} style={inputStyle} />
+            <h3>{text('filters', 'Filters')}</h3>
+            <input name="keyword" value={filters.keyword} onChange={handleFilterChange} placeholder={text('keywordPlaceholder', 'Search title, company, description...')} style={inputStyle} />
+            <input name="skill" value={filters.skill} onChange={handleFilterChange} placeholder={text('skill', 'Skill')} style={inputStyle} />
+            <input name="category" value={filters.category} onChange={handleFilterChange} placeholder={text('category', 'Category')} style={inputStyle} />
             <select name="locationType" value={filters.locationType} onChange={handleFilterChange} style={inputStyle}>
-              <option value="">{t.allLocations}</option>
-              <option value="remote">{t.remote}</option>
-              <option value="onsite">{t.onsite}</option>
-              <option value="hybrid">{t.hybrid}</option>
+              <option value="">{text('allLocations', 'All Locations')}</option>
+              <option value="remote">{text('remote', 'Remote')}</option>
+              <option value="onsite">{text('onsite', 'On-site')}</option>
+              <option value="hybrid">{text('hybrid', 'Hybrid')}</option>
             </select>
-            <input name="salaryMin" type="number" value={filters.salaryMin} onChange={handleFilterChange} placeholder={t.minimumSalary} style={inputStyle} />
-            <button onClick={loadJobs} style={primaryButtonStyle}>{t.applyFilters}</button>
+            <input name="salaryMin" type="number" value={filters.salaryMin} onChange={handleFilterChange} placeholder={text('minimumSalary', 'Minimum Salary')} style={inputStyle} />
+            <button onClick={loadJobs} style={primaryButtonStyle}>{text('applyFilters', 'Apply Filters')}</button>
           </div>
 
-          {jobs.length === 0 ? (
-            <div style={cardStyle}><p>{t.noJobs}</p></div>
-          ) : (
-            jobs.map((job) => {
-              const existingApplication = applications.find(
-                (app) => String(app.jobId) === String(job._id)
-              );
+          {jobs.map((job) => {
+            const existingApplication = applications.find((app) => String(app.jobId) === String(job._id));
+            return (
+              <div key={job._id} style={cardStyle}>
+                <h3>{job.title}</h3>
+                <p><strong>{text('companyName', 'Company Name')}:</strong> {job.company}</p>
+                <p><strong>{text('category', 'Category')}:</strong> {job.category}</p>
+                <p><strong>{text('requiredSkills', 'Required Skills')}:</strong> {(job.requiredSkills || []).join(', ')}</p>
+                <p><strong>{text('matchScore', 'Match Score')}:</strong> {job.matchScore ?? 0}%</p>
+                <p>{job.description}</p>
 
-              return (
-                <div key={job._id} style={cardStyle}>
-                  <h3>{job.title}</h3>
-                  <p><strong>{t.companyName}:</strong> {job.company}</p>
-                  <p><strong>{t.category}:</strong> {job.category}</p>
-                  <p><strong>{t.requiredSkills}:</strong> {(job.requiredSkills || []).join(', ')}</p>
-                  <p><strong>{t.minSalary}:</strong> ${job.salaryMin} | <strong>{t.maxSalary}:</strong> ${job.salaryMax}</p>
-                  <p><strong>{t.locationType}:</strong> {job.locationType}</p>
-                  <p><strong>{t.description}:</strong> {job.description}</p>
-                  <p><strong>{t.matchScore}:</strong> {job.matchScore ?? 0}%</p>
+                {existingApplication ? (
+                  <div style={interviewBoxStyle}>
+                    <p style={{ margin: 0 }}><strong>{text('alreadyApplied', 'You have already applied for this job.')}</strong></p>
+                    <p style={{ margin: '6px 0 0' }}><strong>{text('status', 'Status')}:</strong> {existingApplication.status}</p>
+                  </div>
+                ) : (
+                  <>
+                    {job.questions?.map((question, index) => (
+                      <div key={index} style={{ marginBottom: 10 }}>
+                        <p><strong>{question}</strong></p>
+                        <textarea
+                          value={questionAnswers[job._id]?.[index] || ''}
+                          onChange={(e) =>
+                            setQuestionAnswers((prev) => ({
+                              ...prev,
+                              [job._id]: { ...(prev[job._id] || {}), [index]: e.target.value }
+                            }))
+                          }
+                          placeholder={text('answerQuestion', 'Answer the question')}
+                          style={textareaStyle}
+                        />
+                      </div>
+                    ))}
+                    <button onClick={() => handleApply(job)} style={primaryButtonStyle}>{text('apply', 'Apply')}</button>
+                  </>
+                )}
+              </div>
+            );
+          })}
 
-                  {existingApplication ? (
-                    <div style={interviewBoxStyle}>
-                      <p style={{ margin: 0, fontWeight: 600 }}>{t.alreadyApplied}</p>
-                      <p style={{ margin: '6px 0 0' }}>
-                        <strong>{t.status}:</strong> {existingApplication.status}
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      {job.questions && job.questions.length > 0 && (
-                        <div style={{ marginBottom: 12 }}>
-                          <h4 style={{ marginBottom: 10 }}>{t.screeningQuestions}</h4>
-                          {job.questions.map((question, index) => (
-                            <div key={index} style={{ marginBottom: 10 }}>
-                              <p style={{ marginBottom: 6 }}><strong>{question}</strong></p>
-                              <textarea
-                                value={questionAnswers[job._id]?.[index] || ''}
-                                onChange={(e) =>
-                                  setQuestionAnswers((prev) => ({
-                                    ...prev,
-                                    [job._id]: {
-                                      ...(prev[job._id] || {}),
-                                      [index]: e.target.value
-                                    }
-                                  }))
-                                }
-                                placeholder={t.answerQuestion}
-                                style={textareaStyle}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <button onClick={() => handleApply(job)} style={primaryButtonStyle}>{t.apply}</button>
-                    </>
-                  )}
-                </div>
-              );
-            })
-          )}
-
-          {applyMessage && <div style={cardStyle}><p>{applyMessage}</p></div>}
+          {applyMessage && <div style={cardStyle}>{applyMessage}</div>}
         </div>
       )}
 
       {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'training' && (
         <div style={contentContainerStyle}>
-          <h2 style={sectionTitleStyle}>{t.training}</h2>
-          <p style={{ textAlign: 'center', color: '#475569', marginBottom: 24 }}>{t.trainingDesc}</p>
-
-          {modules.length === 0 ? (
-            <div style={cardStyle}><p>{t.noModules}</p></div>
-          ) : (
-            modules.map((module) => (
-              <div key={module._id} style={cardStyle}>
-                <h3>{module.title}</h3>
-                <p>{module.description}</p>
-                <p><strong>Duration:</strong> {module.duration}</p>
-                {completedModuleIds.has(module._id) ? (
-                  <p style={{ color: 'green', fontWeight: 'bold' }}>{t.completed}</p>
-                ) : (
-                  <button onClick={() => markModuleComplete(module._id)} style={primaryButtonStyle}>{t.completeModule}</button>
-                )}
-              </div>
-            ))
-          )}
+          {modules.map((module) => (
+            <div key={module._id} style={cardStyle}>
+              <h3>{module.title}</h3>
+              <p>{module.description}</p>
+              <p>{module.duration}</p>
+              {completedModuleIds.has(module._id) ? (
+                <p style={{ color: 'green', fontWeight: 'bold' }}>{text('completed', 'Completed - Certificate Issued')}</p>
+              ) : (
+                <button onClick={() => markModuleComplete(module._id)} style={primaryButtonStyle}>{text('completeModule', 'Complete Module')}</button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
       {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'applications' && (
         <div style={contentContainerStyle}>
-          <h2 style={sectionTitleStyle}>{t.applications}</h2>
-          {applications.length === 0 ? (
-            <div style={cardStyle}><p>{t.noApplications}</p></div>
-          ) : (
-            applications.map((application) => (
-              <div key={application._id} style={cardStyle}>
-                <h3>{application.jobTitle}</h3>
-                <p><strong>{t.status}:</strong> {application.status}</p>
-                <p><strong>{t.applied}:</strong> {new Date(application.appliedAt).toLocaleString()}</p>
-                {application.interviewDate && <p><strong>{t.interviewDate}:</strong> {application.interviewDate}</p>}
-              </div>
-            ))
-          )}
+          {applications.map((application) => (
+            <div key={application._id} style={cardStyle}>
+              <h3>{application.jobTitle}</h3>
+              <p><strong>{text('status', 'Status')}:</strong> {application.status}</p>
+              <p><strong>{text('applied', 'Applied')}:</strong> {new Date(application.appliedAt).toLocaleString()}</p>
+              {application.interviewDate && <p><strong>{text('interviewDate', 'Interview Date')}:</strong> {application.interviewDate}</p>}
+              {application.interviewType && <p><strong>{text('interviewType', 'Interview Type')}:</strong> {application.interviewType}</p>}
+              {application.interviewLink && (
+                <p><strong>{text('meetingLink', 'Meeting Link')}:</strong> <a href={application.interviewLink} target="_blank" rel="noreferrer">{application.interviewLink}</a></p>
+              )}
+              {application.interviewLocation && <p><strong>{text('meetingLocation', 'Meeting Location')}:</strong> {application.interviewLocation}</p>}
+              {application.interviewNotes && <p><strong>{text('interviewNotes', 'Interview Notes')}:</strong> {application.interviewNotes}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'certificates' && (
+        <div style={contentContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('certificates', 'Certificates')}</h2>
+            {certificates.length === 0 ? (
+              <p>{text('noCertificates', 'No certificates yet.')}</p>
+            ) : (
+              certificates.map((cert) => (
+                <div key={cert._id} style={{ padding: 12, borderBottom: '1px solid #e2e8f0' }}>
+                  <strong>{cert.moduleTitle}</strong>
+                  <p>{text('issuedAt', 'Issued At')}: {new Date(cert.issuedAt).toLocaleString()}</p>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
 
       {isLoggedIn && currentUser?.role === 'employer' && activeTab === 'employer' && (
         <div style={contentContainerStyle}>
-          <h2 style={sectionTitleStyle}>{t.employerDashboard}</h2>
-
           <div style={cardStyle}>
-            <h3>{t.postJob}</h3>
+            <h3>{text('postJob', 'Post Job')}</h3>
             <form onSubmit={handlePostJob}>
-              <input name="title" placeholder={t.title} required style={inputStyle} />
-              <input name="category" placeholder={t.category} required style={inputStyle} />
-              <input name="requiredSkills" placeholder={t.requiredSkills} style={inputStyle} />
-              <input name="salaryMin" type="number" placeholder={t.minSalary} style={inputStyle} />
-              <input name="salaryMax" type="number" placeholder={t.maxSalary} style={inputStyle} />
+              <input name="title" placeholder={text('title', 'Job Title')} required style={inputStyle} />
+              <input name="category" placeholder={text('category', 'Category')} required style={inputStyle} />
+              <input name="requiredSkills" placeholder={text('requiredSkills', 'Required Skills')} style={inputStyle} />
+              <input name="salaryMin" type="number" placeholder={text('minSalary', 'Minimum Salary')} style={inputStyle} />
+              <input name="salaryMax" type="number" placeholder={text('maxSalary', 'Maximum Salary')} style={inputStyle} />
               <select name="locationType" defaultValue="remote" style={inputStyle}>
-                <option value="remote">{t.remote}</option>
-                <option value="onsite">{t.onsite}</option>
-                <option value="hybrid">{t.hybrid}</option>
+                <option value="remote">{text('remote', 'Remote')}</option>
+                <option value="onsite">{text('onsite', 'On-site')}</option>
+                <option value="hybrid">{text('hybrid', 'Hybrid')}</option>
               </select>
-              <textarea name="description" placeholder={t.description} style={textareaStyle} />
-              <textarea name="questions" placeholder={t.screeningPlaceholder} style={textareaStyle} />
-              <button type="submit" style={primaryButtonStyle}>{t.postJob}</button>
+              <textarea name="description" placeholder={text('description', 'Description')} style={textareaStyle} />
+              <textarea name="questions" placeholder={text('screeningPlaceholder', 'One question per line')} style={textareaStyle} />
+              <button type="submit" style={primaryButtonStyle}>{text('postJob', 'Post Job')}</button>
             </form>
           </div>
 
-          <h3 style={sectionTitleStyle}>{t.manageApplicants}</h3>
+          {employerApplications.map((application) => {
+            const isPending = application.status === 'Pending';
+            const isShortlisted = application.status === 'Shortlisted';
+            const isAccepted = application.status === 'Accepted';
+            const isRejected = application.status === 'Rejected';
+            const isInterviewScheduled = application.status === 'Interview Scheduled';
 
-          {employerApplications.length === 0 ? (
-            <div style={cardStyle}><p>{t.noApplications}</p></div>
-          ) : (
-            employerApplications.map((application) => {
-              const isPending = application.status === 'Pending';
-              const isShortlisted = application.status === 'Shortlisted';
-              const isAccepted = application.status === 'Accepted';
-              const isRejected = application.status === 'Rejected';
-              const isInterviewScheduled = application.status === 'Interview Scheduled';
-
-              return (
-                <div key={application._id} style={professionalApplicantCardStyle}>
-                  <div style={applicantTopRowStyle}>
-                    <div>
-                      <h3 style={{ margin: 0 }}>{application.jobTitle}</h3>
-                      <p style={{ margin: '8px 0 0' }}><strong>Applicant:</strong> {application.name}</p>
-                      <p style={{ margin: '4px 0 0' }}><strong>{t.email}:</strong> {application.email}</p>
-
-                      {application.skills && application.skills.length > 0 && (
-                        <p style={{ margin: '4px 0 0' }}>
-                          <strong>{t.skills}:</strong> {application.skills.join(', ')}
-                        </p>
-                      )}
-
-                      {application.resume && (
-                        <p style={{ margin: '6px 0 0' }}>
-                          <strong>{t.resume}:</strong>{' '}
-                          <a
-                            href={`http://localhost:5000/uploads/${application.resume}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {t.viewResume}
-                          </a>
-                        </p>
-                      )}
-                    </div>
-
-                    <div style={getStatusBadgeStyle(application.status)}>
-                      {application.status}
-                    </div>
+            return (
+              <div key={application._id} style={professionalApplicantCardStyle}>
+                <div style={applicantTopRowStyle}>
+                  <div>
+                    <h3 style={{ margin: 0 }}>{application.jobTitle}</h3>
+                    <p><strong>Applicant:</strong> {application.name}</p>
+                    <p><strong>{text('email', 'Email')}:</strong> {application.email}</p>
+                    {application.skills?.length > 0 && <p><strong>{text('skills', 'Skills')}:</strong> {application.skills.join(', ')}</p>}
+                    {application.resume && (
+                      <p>
+                        <strong>{text('resume', 'Resume')}:</strong>{' '}
+                        <a href={`http://localhost:5000/uploads/${application.resume}`} target="_blank" rel="noreferrer">
+                          {text('viewResume', 'View Resume')}
+                        </a>
+                      </p>
+                    )}
+                    <p><strong>{text('verified', 'Verified')}:</strong> {currentUser.isVerified ? 'Yes' : 'No'}</p>
                   </div>
+                  <div style={getStatusBadgeStyle(application.status)}>{application.status}</div>
+                </div>
 
-                  <div style={metaRowStyle}>
-                    <span><strong>{t.applied}:</strong> {new Date(application.appliedAt).toLocaleString()}</span>
-                    {application.interviewDate && <span><strong>{t.interviewDate}:</strong> {application.interviewDate}</span>}
+                {application.answers?.length > 0 && (
+                  <div style={{ marginBottom: 14 }}>
+                    <h4>{text('answers', 'Screening Answers')}</h4>
+                    {application.answers.map((item, index) => (
+                      <div key={index} style={{ marginBottom: 10, padding: 10, background: '#f8fafc', borderRadius: 8 }}>
+                        <p><strong>{item.question}</strong></p>
+                        <p>{item.answer}</p>
+                      </div>
+                    ))}
                   </div>
+                )}
 
-                  {application.answers && application.answers.length > 0 && (
-                    <div style={{ marginBottom: 14 }}>
-                      <h4 style={{ marginBottom: 10 }}>{t.answers}</h4>
-                      {application.answers.map((item, index) => (
-                        <div key={index} style={{ marginBottom: 10, padding: 10, background: '#f8fafc', borderRadius: 8 }}>
-                          <p style={{ margin: 0 }}><strong>{item.question}</strong></p>
-                          <p style={{ margin: '6px 0 0' }}>{item.answer}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                {isPending && (
+                  <div style={actionRowStyle}>
+                    <button onClick={() => updateApplicationStatus(application._id, 'Shortlisted')} style={secondaryButtonStyle}>{text('shortlist', 'Shortlist')}</button>
+                    <button onClick={() => updateApplicationStatus(application._id, 'Accepted')} style={successButtonStyle}>{text('accept', 'Accept')}</button>
+                    <button onClick={() => updateApplicationStatus(application._id, 'Rejected')} style={dangerButtonStyle}>{text('reject', 'Reject')}</button>
+                  </div>
+                )}
 
-                  {isPending && (
+                {isShortlisted && (
+                  <>
                     <div style={actionRowStyle}>
-                      <button onClick={() => updateApplicationStatus(application._id, 'Shortlisted')} style={secondaryButtonStyle}>{t.shortlist}</button>
-                      <button onClick={() => updateApplicationStatus(application._id, 'Accepted')} style={successButtonStyle}>{t.accept}</button>
-                      <button onClick={() => updateApplicationStatus(application._id, 'Rejected')} style={dangerButtonStyle}>{t.reject}</button>
+                      <button onClick={() => updateApplicationStatus(application._id, 'Accepted')} style={successButtonStyle}>{text('accept', 'Accept')}</button>
+                      <button onClick={() => updateApplicationStatus(application._id, 'Rejected')} style={dangerButtonStyle}>{text('reject', 'Reject')}</button>
                     </div>
-                  )}
 
-                  {isShortlisted && (
-                    <>
-                      <div style={actionRowStyle}>
-                        <button onClick={() => updateApplicationStatus(application._id, 'Accepted')} style={successButtonStyle}>{t.accept}</button>
-                        <button onClick={() => updateApplicationStatus(application._id, 'Rejected')} style={dangerButtonStyle}>{t.reject}</button>
-                      </div>
+                    <input
+                      type="datetime-local"
+                      value={interviewDates[application._id] || ''}
+                      onChange={(e) => setInterviewDates((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={inputStyle}
+                    />
 
-                      <div style={{ marginTop: 14 }}>
-                        <input
-                          type="datetime-local"
-                          value={interviewDates[application._id] || ''}
-                          onChange={(e) => setInterviewDates((prev) => ({ ...prev, [application._id]: e.target.value }))}
-                          style={inputStyle}
-                        />
-                        <button onClick={() => scheduleInterview(application._id)} style={primaryButtonStyle}>{t.scheduleInterview}</button>
-                      </div>
-                    </>
-                  )}
+                    <select
+                      value={interviewTypes[application._id] || ''}
+                      onChange={(e) => setInterviewTypes((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={inputStyle}
+                    >
+                      <option value="">{text('interviewType', 'Interview Type')}</option>
+                      <option value="online">{text('online', 'Online')}</option>
+                      <option value="physical">{text('physical', 'Physical')}</option>
+                    </select>
 
-                  {isAccepted && !isInterviewScheduled && (
-                    <div style={{ marginTop: 14 }}>
-                      <p style={{ color: '#166534', fontWeight: 600 }}>{t.candidateAccepted}</p>
+                    {interviewTypes[application._id] === 'online' && (
                       <input
-                        type="datetime-local"
-                        value={interviewDates[application._id] || ''}
-                        onChange={(e) => setInterviewDates((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                        type="text"
+                        placeholder={text('meetingLink', 'Meeting Link')}
+                        value={interviewLinks[application._id] || ''}
+                        onChange={(e) => setInterviewLinks((prev) => ({ ...prev, [application._id]: e.target.value }))}
                         style={inputStyle}
                       />
-                      <button onClick={() => scheduleInterview(application._id)} style={primaryButtonStyle}>{t.scheduleInterview}</button>
-                    </div>
-                  )}
+                    )}
 
-                  {isRejected && (
-                    <p style={{ marginTop: 14, color: '#991b1b', fontWeight: 600 }}>{t.candidateRejected}</p>
-                  )}
+                    {interviewTypes[application._id] === 'physical' && (
+                      <input
+                        type="text"
+                        placeholder={text('meetingLocation', 'Meeting Location')}
+                        value={interviewLocations[application._id] || ''}
+                        onChange={(e) => setInterviewLocations((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                        style={inputStyle}
+                      />
+                    )}
 
-                  {isInterviewScheduled && (
-                    <div style={interviewBoxStyle}>
-                      <p style={{ margin: 0, fontWeight: 600 }}>{t.interviewScheduled}</p>
-                      <p style={{ margin: '6px 0 0' }}><strong>{t.interviewDate}:</strong> {application.interviewDate}</p>
+                    <textarea
+                      placeholder={text('interviewNotes', 'Interview Notes')}
+                      value={interviewNotes[application._id] || ''}
+                      onChange={(e) => setInterviewNotes((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={textareaStyle}
+                    />
+
+                    <button onClick={() => scheduleInterview(application._id)} style={primaryButtonStyle}>{text('scheduleInterview', 'Schedule Interview')}</button>
+                  </>
+                )}
+
+                {isAccepted && !isInterviewScheduled && (
+                  <>
+                    <p style={{ color: '#166534', fontWeight: 600 }}>{text('candidateAccepted', 'Candidate accepted. You can now schedule an interview.')}</p>
+
+                    <input
+                      type="datetime-local"
+                      value={interviewDates[application._id] || ''}
+                      onChange={(e) => setInterviewDates((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={inputStyle}
+                    />
+
+                    <select
+                      value={interviewTypes[application._id] || ''}
+                      onChange={(e) => setInterviewTypes((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={inputStyle}
+                    >
+                      <option value="">{text('interviewType', 'Interview Type')}</option>
+                      <option value="online">{text('online', 'Online')}</option>
+                      <option value="physical">{text('physical', 'Physical')}</option>
+                    </select>
+
+                    {interviewTypes[application._id] === 'online' && (
+                      <input
+                        type="text"
+                        placeholder={text('meetingLink', 'Meeting Link')}
+                        value={interviewLinks[application._id] || ''}
+                        onChange={(e) => setInterviewLinks((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                        style={inputStyle}
+                      />
+                    )}
+
+                    {interviewTypes[application._id] === 'physical' && (
+                      <input
+                        type="text"
+                        placeholder={text('meetingLocation', 'Meeting Location')}
+                        value={interviewLocations[application._id] || ''}
+                        onChange={(e) => setInterviewLocations((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                        style={inputStyle}
+                      />
+                    )}
+
+                    <textarea
+                      placeholder={text('interviewNotes', 'Interview Notes')}
+                      value={interviewNotes[application._id] || ''}
+                      onChange={(e) => setInterviewNotes((prev) => ({ ...prev, [application._id]: e.target.value }))}
+                      style={textareaStyle}
+                    />
+
+                    <button onClick={() => scheduleInterview(application._id)} style={primaryButtonStyle}>{text('scheduleInterview', 'Schedule Interview')}</button>
+                  </>
+                )}
+
+                {isRejected && <p style={{ color: '#991b1b', fontWeight: 600 }}>{text('candidateRejected', 'This application has been rejected.')}</p>}
+
+                {isInterviewScheduled && (
+                  <div style={interviewBoxStyle}>
+                    <p><strong>{text('interviewScheduled', 'Interview scheduled successfully.')}</strong></p>
+                    <p>{application.interviewDate}</p>
+                    {application.interviewLink && <p>{application.interviewLink}</p>}
+                    {application.interviewLocation && <p>{application.interviewLocation}</p>}
+                    {application.interviewNotes && <p>{application.interviewNotes}</p>}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {isLoggedIn && activeTab === 'notifications' && (
+        <div style={contentContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('notifications', 'Notifications')} ({notifications.filter((n) => !n.isRead).length})</h2>
+            {notifications.length === 0 ? (
+              <p>{text('noNotifications', 'No notifications yet.')}</p>
+            ) : (
+              notifications.map((n) => (
+                <div key={n._id} style={{ padding: 12, borderBottom: '1px solid #e2e8f0', background: n.isRead ? 'white' : '#eff6ff' }}>
+                  <strong>{n.title}</strong>
+                  <p>{n.message}</p>
+                  <small>{new Date(n.createdAt).toLocaleString()}</small>
+                  {!n.isRead && (
+                    <div style={{ marginTop: 8 }}>
+                      <button onClick={() => markNotificationRead(n._id)} style={smallButtonStyle}>{text('markRead', 'Mark as read')}</button>
                     </div>
                   )}
                 </div>
-              );
-            })
-          )}
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'help' && (
+        <div style={contentContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('help', 'Help Center')}</h2>
+            <p>{text('helpIntro', 'This platform helps job seekers apply for jobs, complete training, and track progress.')}</p>
+            <h4>{text('faq1', 'How do I apply?')}</h4>
+            <p>{text('faq1a', 'Open Browse Jobs, answer screening questions, then click Apply.')}</p>
+            <h4>{text('faq2', 'How do I get a certificate?')}</h4>
+            <p>{text('faq2a', 'Complete a training module and your certificate will appear in the Certificates tab.')}</p>
+            <h4>{text('faq3', 'How does an employer review me?')}</h4>
+            <p>{text('faq3a', 'The employer can review your profile, skills, resume, and your screening answers.')}</p>
+          </div>
         </div>
       )}
 
       {isLoggedIn && activeTab === 'profile' && currentUser && (
         <div style={centerContainerStyle}>
           <div style={cardStyle}>
-            <h2 style={sectionTitleStyle}>{t.profile}</h2>
-
+            <h2>{text('profile', 'Profile')}</h2>
             <form onSubmit={updateProfile}>
-              <input
-                name="name"
-                value={profileForm.name}
-                onChange={handleProfileChange}
-                placeholder={currentUser.role === 'jobSeeker' ? t.fullName : t.companyName}
-                style={inputStyle}
-              />
-              <input name="phone" value={profileForm.phone} onChange={handleProfileChange} placeholder={t.phone} style={inputStyle} />
+              <input name="name" value={profileForm.name} onChange={handleProfileChange} placeholder={currentUser.role === 'jobSeeker' ? text('fullName', 'Full Name') : text('companyName', 'Company Name')} style={inputStyle} />
+              <input name="phone" value={profileForm.phone} onChange={handleProfileChange} placeholder={text('phone', 'Phone Number')} style={inputStyle} />
 
               {currentUser.role === 'jobSeeker' && (
                 <>
-                  <input name="skills" value={profileForm.skills} onChange={handleProfileChange} placeholder={t.skills} style={inputStyle} />
-                  <textarea name="workHistory" value={profileForm.workHistory} onChange={handleProfileChange} placeholder={t.workHistory} style={textareaStyle} />
-                  <label style={labelStyle}>{t.resume}</label>
+                  <input name="skills" value={profileForm.skills} onChange={handleProfileChange} placeholder={text('skills', 'Skills')} style={inputStyle} />
+                  <textarea name="workHistory" value={profileForm.workHistory} onChange={handleProfileChange} placeholder={text('workHistory', 'Work History')} style={textareaStyle} />
+                  <label style={labelStyle}>{text('resume', 'Resume')}</label>
                   <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setProfileResume(e.target.files[0])} style={inputStyle} />
-                  <label style={labelStyle}>{t.photo}</label>
-                  <input type="file" accept="image/*" onChange={(e) => setProfilePhoto(e.target.files[0])} style={inputStyle} />
                 </>
               )}
 
               {currentUser.role === 'employer' && (
                 <>
-                  <input name="companyWebsite" value={profileForm.companyWebsite} onChange={handleProfileChange} placeholder={t.companyWebsite} style={inputStyle} />
-                  <label style={labelStyle}>{t.companyLogo}</label>
-                  <input type="file" accept="image/*" onChange={(e) => setProfilePhoto(e.target.files[0])} style={inputStyle} />
-                  <p><strong>Verified:</strong> {currentUser.isVerified ? 'Yes' : 'No'}</p>
+                  <input name="companyWebsite" value={profileForm.companyWebsite} onChange={handleProfileChange} placeholder={text('companyWebsite', 'Company Website')} style={inputStyle} />
+                  <p><strong>{text('verified', 'Verified')}:</strong> {currentUser.isVerified ? 'Yes' : 'No'}</p>
+                  {!currentUser.isVerified && (
+                    <button type="button" onClick={verifyEmployer} style={smallButtonStyle}>{text('verifyCompany', 'Verify Company')}</button>
+                  )}
                 </>
               )}
 
-              <select name="preferredLanguage" value={profileForm.preferredLanguage} onChange={handleProfileChange} style={inputStyle}>
-                <option value="en">{t.english}</option>
-                <option value="so">{t.somali}</option>
-              </select>
-
-              <button type="submit" style={primaryButtonStyle}>{t.saveProfile}</button>
+              <button type="submit" style={primaryButtonStyle}>{text('saveProfile', 'Save Profile')}</button>
             </form>
 
             {profileMessage && <p style={{ color: 'green' }}>{profileMessage}</p>}
@@ -1237,10 +1220,25 @@ const contentContainerStyle = {
   margin: '0 auto'
 };
 
-const dashboardGridStyle = {
+const statsGridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-  gap: 18
+  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+  gap: 16,
+  marginBottom: 22
+};
+
+const statCardStyle = {
+  background: 'white',
+  padding: 20,
+  borderRadius: 12,
+  boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
+  textAlign: 'center'
+};
+
+const statNumberStyle = {
+  fontSize: '28px',
+  fontWeight: 'bold',
+  margin: 0
 };
 
 const cardStyle = {
@@ -1249,11 +1247,6 @@ const cardStyle = {
   borderRadius: 14,
   boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
   marginBottom: 18
-};
-
-const sectionTitleStyle = {
-  textAlign: 'center',
-  marginBottom: 20
 };
 
 const inputStyle = {
@@ -1300,29 +1293,10 @@ const smallButtonStyle = {
   padding: '8px 14px',
   borderRadius: 8,
   border: 'none',
+  background: '#e2e8f0',
+  color: '#1e3a8a',
   cursor: 'pointer',
   fontWeight: 600
-};
-
-const statsGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-  gap: 16,
-  marginBottom: 22
-};
-
-const statCardStyle = {
-  background: 'white',
-  padding: 20,
-  borderRadius: 12,
-  boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
-  textAlign: 'center'
-};
-
-const statNumberStyle = {
-  fontSize: '28px',
-  fontWeight: 'bold',
-  margin: 0
 };
 
 const professionalApplicantCardStyle = {
@@ -1340,15 +1314,6 @@ const applicantTopRowStyle = {
   alignItems: 'flex-start',
   gap: 16,
   marginBottom: 14
-};
-
-const metaRowStyle = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: 18,
-  marginBottom: 14,
-  color: '#475569',
-  fontSize: '14px'
 };
 
 const actionRowStyle = {

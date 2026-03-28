@@ -19,14 +19,12 @@ app.use('/uploads', express.static(uploadDir));
 
 const storage = multer.diskStorage({
   destination: uploadDir,
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname.replace(/\s/g, '_')}`);
-  }
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname.replace(/\s/g, '_')}`)
 });
 const upload = multer({ storage });
 
 const userSchema = new mongoose.Schema({
-  role: { type: String, enum: ['jobSeeker', 'employer'], required: true },
+  role: { type: String, enum: ['jobSeeker', 'employer', 'admin'], required: true },
   name: String,
   email: { type: String, unique: true },
   password: String,
@@ -37,7 +35,8 @@ const userSchema = new mongoose.Schema({
   photo: String,
   companyWebsite: String,
   isVerified: { type: Boolean, default: false },
-  preferredLanguage: { type: String, default: 'en' }
+  preferredLanguage: { type: String, default: 'en' },
+  createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
@@ -64,14 +63,13 @@ const applicationSchema = new mongoose.Schema({
   email: String,
   resume: String,
   skills: [String],
-  answers: [
-    {
-      question: String,
-      answer: String
-    }
-  ],
+  answers: [{ question: String, answer: String }],
   status: { type: String, default: 'Pending' },
   interviewDate: String,
+  interviewType: String,
+  interviewLink: String,
+  interviewLocation: String,
+  interviewNotes: String,
   appliedAt: { type: Date, default: Date.now }
 });
 const Application = mongoose.models.Application || mongoose.model('Application', applicationSchema);
@@ -91,36 +89,46 @@ const progressSchema = new mongoose.Schema({
 });
 const TrainingProgress = mongoose.models.TrainingProgress || mongoose.model('TrainingProgress', progressSchema);
 
+const certificateSchema = new mongoose.Schema({
+  userEmail: String,
+  moduleId: mongoose.Schema.Types.ObjectId,
+  moduleTitle: String,
+  issuedAt: { type: Date, default: Date.now }
+});
+const Certificate = mongoose.models.Certificate || mongoose.model('Certificate', certificateSchema);
+
+const notificationSchema = new mongoose.Schema({
+  userEmail: String,
+  title: String,
+  message: String,
+  type: { type: String, default: 'info' },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+});
+const Notification = mongoose.models.Notification || mongoose.model('Notification', notificationSchema);
+
 const parseSkills = (skills) =>
   skills ? String(skills).split(',').map((s) => s.trim()).filter(Boolean) : [];
 
-const parseQuestions = (questions) => {
-  if (!questions) return [];
-  return String(questions)
-    .split('\n')
-    .map((q) => q.trim())
-    .filter(Boolean);
-};
+const parseQuestions = (questions) =>
+  questions ? String(questions).split('\n').map((q) => q.trim()).filter(Boolean) : [];
 
 const calculateMatchScore = (userSkills = [], requiredSkills = [], workHistory = '') => {
   if (!requiredSkills.length) return 50;
 
   const normalizedUserSkills = userSkills.map((s) => String(s).toLowerCase().trim());
   const historyText = String(workHistory || '').toLowerCase();
+  const normalizedRequired = requiredSkills.map((s) => String(s).toLowerCase().trim());
 
-  const normalizedRequiredSkills = requiredSkills.map((s) => String(s).toLowerCase().trim());
-
-  const matches = normalizedRequiredSkills.filter((required) => {
+  const matches = normalizedRequired.filter((required) => {
     const skillMatch = normalizedUserSkills.some(
       (userSkill) => userSkill.includes(required) || required.includes(userSkill)
     );
-
     const historyMatch = historyText.includes(required);
-
     return skillMatch || historyMatch;
   });
 
-  return Math.round((matches.length / normalizedRequiredSkills.length) * 100);
+  return Math.round((matches.length / normalizedRequired.length) * 100);
 };
 
 async function seedModules() {
@@ -146,6 +154,15 @@ async function seedModules() {
   }
 }
 
+async function createNotification(userEmail, title, message, type = 'info') {
+  await Notification.create({
+    userEmail: String(userEmail).toLowerCase(),
+    title,
+    message,
+    type
+  });
+}
+
 app.get('/', (req, res) => res.send('Backend running ✅'));
 
 app.post('/api/signup', upload.fields([{ name: 'resume' }, { name: 'photo' }]), async (req, res) => {
@@ -160,9 +177,7 @@ app.post('/api/signup', upload.fields([{ name: 'resume' }, { name: 'photo' }]), 
     }
 
     const existing = await User.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ error: 'Email already exists' });
-    }
+    if (existing) return res.status(400).json({ error: 'Email already exists' });
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -182,6 +197,7 @@ app.post('/api/signup', upload.fields([{ name: 'resume' }, { name: 'photo' }]), 
     });
 
     await user.save();
+    await createNotification(email, 'Welcome', 'Your account was created successfully.', 'success');
     res.json({ message: 'Signup successful' });
   } catch (err) {
     console.error('SIGNUP ERROR:', err);
@@ -200,11 +216,7 @@ app.post('/api/login', async (req, res) => {
     const storedPassword = typeof user.password === 'string' ? user.password : '';
     let match = false;
 
-    if (
-      storedPassword.startsWith('$2a$') ||
-      storedPassword.startsWith('$2b$') ||
-      storedPassword.startsWith('$2y$')
-    ) {
+    if (storedPassword.startsWith('$2')) {
       match = await bcrypt.compare(password, storedPassword);
     } else {
       match = storedPassword === password;
@@ -280,6 +292,8 @@ app.put('/api/employers/:email/verify', async (req, res) => {
     ).select('-password');
 
     if (!updated) return res.status(404).json({ error: 'Employer not found' });
+
+    await createNotification(updated.email, 'Verification', 'Your employer account has been verified.', 'success');
     res.json({ employer: updated });
   } catch (err) {
     console.error('VERIFY ERROR:', err);
@@ -377,7 +391,7 @@ app.post('/api/apply', async (req, res) => {
     const existing = await Application.findOne({ jobId: job._id, email: user.email });
     if (existing) return res.status(400).json({ error: 'You already applied for this job' });
 
-    await new Application({
+    const application = await Application.create({
       jobId: job._id,
       jobTitle: job.title,
       employerEmail: job.employerEmail,
@@ -387,9 +401,12 @@ app.post('/api/apply', async (req, res) => {
       skills: user.skills || [],
       answers: Array.isArray(answers) ? answers : [],
       status: 'Pending'
-    }).save();
+    });
 
-    res.json({ message: 'Applied successfully' });
+    await createNotification(user.email, 'Application Submitted', `You applied for ${job.title}.`, 'success');
+    await createNotification(job.employerEmail, 'New Applicant', `${user.name} applied for ${job.title}.`, 'info');
+
+    res.json({ message: 'Applied successfully', application });
   } catch (err) {
     console.error('APPLY ERROR:', err);
     res.status(500).json({ error: 'Failed to apply' });
@@ -421,9 +438,16 @@ app.get('/api/applications/employer/:email', async (req, res) => {
 
 app.put('/api/applications/:id', async (req, res) => {
   try {
+    const existing = await Application.findById(req.params.id);
+    if (!existing) return res.status(404).json({ error: 'Application not found' });
+
     const updates = {};
     if (req.body.status) updates.status = req.body.status;
     if (req.body.interviewDate) updates.interviewDate = req.body.interviewDate;
+    if (req.body.interviewType) updates.interviewType = req.body.interviewType;
+    if (req.body.interviewLink) updates.interviewLink = req.body.interviewLink;
+    if (req.body.interviewLocation) updates.interviewLocation = req.body.interviewLocation;
+    if (req.body.interviewNotes) updates.interviewNotes = req.body.interviewNotes;
 
     const updated = await Application.findByIdAndUpdate(
       req.params.id,
@@ -431,7 +455,28 @@ app.put('/api/applications/:id', async (req, res) => {
       { returnDocument: 'after' }
     );
 
-    if (!updated) return res.status(404).json({ error: 'Application not found' });
+    if (updates.status) {
+      await createNotification(
+        existing.email,
+        'Application Update',
+        `Your application for ${existing.jobTitle} is now ${updates.status}.`,
+        'info'
+      );
+    }
+
+    if (updates.interviewDate) {
+      const meetingInfo = updates.interviewType === 'online'
+        ? `Meeting link: ${updates.interviewLink || 'Not provided'}`
+        : `Location: ${updates.interviewLocation || 'Not provided'}`;
+
+      await createNotification(
+        existing.email,
+        'Interview Scheduled',
+        `Your interview for ${existing.jobTitle} is scheduled for ${updates.interviewDate}. ${meetingInfo}`,
+        'success'
+      );
+    }
+
     res.json({ message: 'Application updated', application: updated });
   } catch (err) {
     console.error('UPDATE APPLICATION ERROR:', err);
@@ -465,27 +510,73 @@ app.post('/api/training-progress/complete', async (req, res) => {
   try {
     const { userEmail, moduleId } = req.body;
     const email = String(userEmail).toLowerCase();
+    const module = await TrainingModule.findById(moduleId);
 
     const existing = await TrainingProgress.findOne({ userEmail: email, moduleId });
     if (existing) {
       existing.completed = true;
       existing.completedAt = new Date();
       await existing.save();
-      return res.json({ message: 'Completed', progress: existing });
+    } else {
+      await TrainingProgress.create({
+        userEmail: email,
+        moduleId,
+        completed: true,
+        completedAt: new Date()
+      });
     }
 
-    const progress = new TrainingProgress({
-      userEmail: email,
-      moduleId,
-      completed: true,
-      completedAt: new Date()
-    });
+    const certificateExists = await Certificate.findOne({ userEmail: email, moduleId });
+    if (!certificateExists && module) {
+      await Certificate.create({
+        userEmail: email,
+        moduleId,
+        moduleTitle: module.title
+      });
+    }
 
-    await progress.save();
-    res.json({ message: 'Completed', progress });
+    if (module) {
+      await createNotification(email, 'Certificate Issued', `You completed ${module.title} and earned a certificate.`, 'success');
+    }
+
+    res.json({ message: 'Completed' });
   } catch (err) {
     console.error('COMPLETE MODULE ERROR:', err);
     res.status(500).json({ error: 'Failed to save progress' });
+  }
+});
+
+app.get('/api/certificates/:email', async (req, res) => {
+  try {
+    const certificates = await Certificate.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ issuedAt: -1 });
+    res.json(certificates);
+  } catch (err) {
+    console.error('CERTIFICATES ERROR:', err);
+    res.status(500).json({ error: 'Failed to fetch certificates' });
+  }
+});
+
+app.get('/api/notifications/:email', async (req, res) => {
+  try {
+    const notifications = await Notification.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ createdAt: -1 });
+    res.json(notifications);
+  } catch (err) {
+    console.error('NOTIFICATIONS ERROR:', err);
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
+app.put('/api/notifications/read/:id', async (req, res) => {
+  try {
+    const updated = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { isRead: true },
+      { returnDocument: 'after' }
+    );
+    res.json(updated);
+  } catch (err) {
+    console.error('MARK READ ERROR:', err);
+    res.status(500).json({ error: 'Failed to update notification' });
   }
 });
 
@@ -496,7 +587,9 @@ app.get('/api/dashboard/jobseeker/:email', async (req, res) => {
     const accepted = await Application.countDocuments({ email, status: 'Accepted' });
     const pending = await Application.countDocuments({ email, status: 'Pending' });
     const completedCourses = await TrainingProgress.countDocuments({ userEmail: email, completed: true });
-    res.json({ totalApplications, accepted, pending, completedCourses });
+    const certificates = await Certificate.countDocuments({ userEmail: email });
+
+    res.json({ totalApplications, accepted, pending, completedCourses, certificates });
   } catch (err) {
     console.error('JOB SEEKER DASHBOARD ERROR:', err);
     res.status(500).json({ error: 'Failed to fetch dashboard' });
@@ -510,6 +603,7 @@ app.get('/api/dashboard/employer/:email', async (req, res) => {
     const totalApplications = await Application.countDocuments({ employerEmail: email });
     const shortlisted = await Application.countDocuments({ employerEmail: email, status: 'Shortlisted' });
     const interviews = await Application.countDocuments({ employerEmail: email, status: 'Interview Scheduled' });
+
     res.json({ totalJobs, totalApplications, shortlisted, interviews });
   } catch (err) {
     console.error('EMPLOYER DASHBOARD ERROR:', err);
@@ -517,10 +611,57 @@ app.get('/api/dashboard/employer/:email', async (req, res) => {
   }
 });
 
+app.get('/api/dashboard/admin', async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const totalJobSeekers = await User.countDocuments({ role: 'jobSeeker' });
+    const totalEmployers = await User.countDocuments({ role: 'employer' });
+    const totalJobs = await Job.countDocuments();
+    const totalApplications = await Application.countDocuments();
+    const totalCertificates = await Certificate.countDocuments();
+
+    res.json({
+      totalUsers,
+      totalJobSeekers,
+      totalEmployers,
+      totalJobs,
+      totalApplications,
+      totalCertificates
+    });
+  } catch (err) {
+    console.error('ADMIN DASHBOARD ERROR:', err);
+    res.status(500).json({ error: 'Failed to fetch admin dashboard' });
+  }
+});
+
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    console.error('ADMIN USERS ERROR:', err);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('MongoDB connected');
     await seedModules();
+
+    const adminExists = await User.findOne({ role: 'admin', email: 'admin@somtalent.com' });
+    if (!adminExists) {
+      const hashed = await bcrypt.hash('admin123', 10);
+      await User.create({
+        role: 'admin',
+        name: 'System Admin',
+        email: 'admin@somtalent.com',
+        password: hashed,
+        isVerified: true,
+        preferredLanguage: 'en'
+      });
+    }
+
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
   })
