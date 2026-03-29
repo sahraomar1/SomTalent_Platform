@@ -1,95 +1,101 @@
 # SomTalent
 
-## 📌 Project Overview
+**Connecting Somaliland talent to remote jobs worldwide.**
 
-SomTalent is a web-based platform designed to connect job seekers in Somaliland with remote job opportunities worldwide.
-
-The system supports three main actors:
-
-* Job Seeker
-* Employer
-* Admin
+🎥 **Demo Video:** [Paste your video link here]  
+📄 **SRS Document:** [Paste your SRS document link here]
 
 ---
 
-## 🎯 Problem Statement
+## Project Overview
 
-Many skilled individuals in Somaliland face challenges accessing remote job opportunities due to:
-
-* Limited exposure to global job markets
-* Lack of structured platforms
-* Limited training opportunities
+SomTalent is a web-based platform that connects job seekers in Somaliland with remote opportunities from global employers. It provides job matching, resume management, training modules with certification, and an interview scheduling system — all within a role-based environment for job seekers, employers, and admins.
 
 ---
 
-## 💡 Proposed Solution
+## Problem Statement
 
-SomTalent provides a complete solution by offering:
-
-* A job marketplace for remote work
-* Resume submission and employer review
-* Training modules with certification
-* Interview scheduling system
-* Admin system for monitoring and control
+Many skilled individuals in Somaliland face challenges accessing remote job opportunities due to limited exposure to global job markets, a lack of structured platforms, and few training resources. SomTalent addresses this by providing a complete hiring ecosystem tailored to this context.
 
 ---
 
-## 👥 System Actors
+## System Actors
 
-### 🧑‍💻 Job Seeker
-
-* Sign up / Login
-* Upload resume
-* Browse jobs
-* Apply with screening questions
-* Track application status
-* Complete training modules
-* Earn certificates
+| Actor | Capabilities |
+|---|---|
+| **Job Seeker** | Sign up, upload resume, browse and apply for jobs (with cover letter + screening answers), complete training modules, earn certificates, track applications |
+| **Employer** | Post jobs with screening questions, review applicants and their resumes/cover letters, shortlist/accept/reject candidates, schedule interviews (online or physical) |
+| **Admin** | View all users, verify employer accounts, suspend/activate users, monitor platform statistics |
 
 ---
 
-### 🧑‍💼 Employer
+## Key Features
 
-* Post job opportunities
-* View applicants
-* Access job seeker resumes
-* Accept / reject / shortlist candidates
-* Schedule interviews (online or physical)
-
----
-
-### 🛠️ Admin
-
-* View all users
-* Monitor system statistics
-* Manage platform activity
-
----
-
-## 🧩 Key Features
-
-* Role-based dashboards
-* Resume upload and viewing
-* Screening questions during job application
-* Match score system for job relevance
-* Training modules with certificates
-* Interview scheduling system
-* Notification system
+- Bilingual interface (English and Somali)
+- Role-based dashboards with live statistics
+- Resume upload and employer-facing resume viewing
+- Cover letter submission on job application
+- Screening questions during job application
+- Skill-based match score system
+- Training modules with certificate issuance
+- Interview scheduling (online or physical) with meeting links/locations
+- In-app notification system for all events
+- Admin-controlled employer verification with request/approve flow
+- User suspend and activate controls for admin
+- Frontend input validation (email, password, phone)
+- Session persists across browser tabs and restarts
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
-* Frontend: React
-* Backend: Node.js + Express
-* Database: MongoDB
-* File Uploads: Multer
+| Layer | Technology |
+|---|---|
+| Frontend | React (Vite) |
+| Backend | Node.js + Express |
+| Database | MongoDB (local) |
+| File Uploads | Multer |
+| Password Security | bcryptjs |
 
 ---
 
-## 🚀 How to Run the Project
+## Prerequisites
 
-### 1️⃣ Clone Repository
+Before running this project, make sure you have:
+
+- **Node.js v18 or higher** — [Download here](https://nodejs.org)
+- **npm v9 or higher** (comes with Node.js)
+- **MongoDB installed and running locally** — [Download here](https://www.mongodb.com/try/download/community)
+
+### How to install and start MongoDB locally
+
+**Windows:**
+1. Download MongoDB Community Server from the link above
+2. Run the installer (choose "Complete" setup)
+3. MongoDB runs as a Windows service automatically after installation
+4. Verify it is running by opening Command Prompt and typing: `mongosh.`
+
+**macOS (using Homebrew):**
+```bash
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
+```
+
+**Ubuntu/Linux:**
+```bash
+sudo apt-get install -y mongodb
+sudo systemctl start mongod
+sudo systemctl enable mongod
+```
+
+You do not need to create a database manually — MongoDB will create the `somtalent` database automatically when the app first runs.
+
+---
+
+## Setup Instructions
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/SomTalent.git
@@ -98,28 +104,46 @@ cd SomTalent
 
 ---
 
-### 2️⃣ Backend Setup
+### 2. Backend setup
 
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file inside backend:
+Create a file called `.env` inside the `backend/` folder:
 
 ```env
-MONGODB_URI=your_mongodb_connection_string
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/somtalent
 ```
 
-Run backend:
+> This connects to your local MongoDB instance. The database named `somtalent` will be created automatically on first run.
+
+Start the backend server:
 
 ```bash
 npm run dev
 ```
 
+You should see:
+```
+MongoDB connected
+Server running on http://localhost:5000
+Default admin created: admin@somtalent.com / admin123
+```
+
+On first startup, the server automatically:
+- Creates the `somtalent` database and all collections
+- Seeds 3 training modules
+- Creates the default admin account
+- Creates the `uploads/` folder for resume storage
+
 ---
 
-### 3️⃣ Frontend Setup
+### 3. Frontend setup
+
+Open a **new terminal window** (keep the backend running), then:
 
 ```bash
 cd frontend
@@ -127,80 +151,91 @@ npm install
 npm run dev
 ```
 
----
-
-## 🌐 Access URLs
-
-Frontend:
-http://localhost:5173
-
-Backend:
-http://localhost:5000
+The frontend will run at: `http://localhost:5173`
 
 ---
 
-## 🎥 Demo Video
+## Running the Project
 
-(Paste your video link here)
+You must have **two terminal windows open at the same time**:
 
----
+| Terminal | Command | URL |
+|---|---|---|
+| Terminal 1 (backend) | `cd backend && npm run dev` | http://localhost:5000 |
+| Terminal 2 (frontend) | `cd frontend && npm run dev` | http://localhost:5173 |
 
-## 📄 SRS Document
-
-(Paste your SRS document link here)
-
----
-
-## 🧪 Testing Instructions
-
-1. Sign up as a Job Seeker
-2. Upload resume
-3. Browse and apply for jobs
-4. Sign up as Employer
-5. Post a job
-6. Review applicants
-7. Accept or reject candidates
-8. Schedule interview
-9. Check updates on Job Seeker dashboard
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## 📊 System Design Summary
+## Default Admin Credentials
 
-The system follows a role-based architecture:
+An admin account is created automatically on first run:
 
-* Job Seeker interacts with jobs and training
-* Employer manages hiring
-* Admin monitors system operations
+| Field | Value |
+|---|---|
+| Email | `admin@somtalent.com` |
+| Password | `admin123` |
 
----
-
-## 🎯 Conclusion
-
-SomTalent successfully implements the full Software Development Lifecycle by:
-
-* Identifying a real-world problem
-* Designing a structured system
-* Developing a working prototype
-* Demonstrating all actors and processes
+Use these to log in and access the Admin Dashboard, verify employer accounts, and manage users.
 
 ---
 
-## 📌 Notes
+## Testing Instructions
 
-* MongoDB must be running
-* Ensure correct `.env` configuration
-* Use different accounts for testing roles
-* Resume files are stored in `/uploads`
+Use separate browser profiles or incognito windows to test multiple roles simultaneously.
+
+**As a Job Seeker:**
+1. Go to Join / Login → Create Account → As Job Seeker
+2. Fill in name, email, password, skills, work history and upload a resume
+3. Log in → Browse Jobs → answer screening questions → write a cover letter → click Apply
+4. Go to Training Modules → click Complete Module → check your certificate in Certificates tab
+5. Check Notifications for updates
+
+**As Employer:**
+1. Sign up as an Employer with a company name and website
+2. Log in → Post Job → fill in job details and screening questions
+3. Go to Employer Dashboard → review incoming applications
+4. Shortlist a candidate → accept → schedule an interview (choose online or physical)
+5. The job seeker will receive a notification with interview details
+
+**As Admin:**
+1. Log in with `admin@somtalent.com` / `admin123`
+2. View the Admin Dashboard for platform statistics
+3. Go to Users → verify a pending employer or suspend a user
 
 ---
 
-## 👤 Author
+## Project Structure
 
-[Your Name]
+```
+SomTalent/
+├── backend/
+│   ├── index.js          # Express server — all API routes and logic
+│   ├── package.json
+│   ├── .env              # Created by you (not committed to GitHub)
+│   └── uploads/          # Auto-created — stores uploaded resumes
+└── frontend/
+    ├── src/
+    │   └── App.jsx       # Main React component — all UI and logic
+    └── package.json
+```
 
 ---
 
-## 🔗 Repository Link
+## Notes
 
-(Add your GitHub repo link here)
+- MongoDB must be running locally before starting the backend
+- Both the backend and frontend servers must be running at the same time
+- The `uploads/` folder is created automatically — do not create it manually
+- The `.env` file must not be committed to GitHub (it is in `.gitignore`)
+- Resume files are served at `http://localhost:5000/uploads/`
+- The app supports English and Somali — use the language toggle button in the header
+
+---
+
+## Author
+
+**Sahra Omar**  
+African Leadership University  
+[Your GitHub Profile Link]
