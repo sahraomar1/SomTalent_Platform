@@ -6,6 +6,7 @@ const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto'); // Added for Password Reset Tokens
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// ─── Schemas ───────────────────────────────────────────────────────────────
+
 const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['jobSeeker', 'employer', 'admin'], required: true },
   name: String,
@@ -35,7 +38,12 @@ const userSchema = new mongoose.Schema({
   photo: String,
   companyWebsite: String,
   isVerified: { type: Boolean, default: false },
+  verificationRequested: { type: Boolean, default: false },
+  suspended: { type: Boolean, default: false },
   preferredLanguage: { type: String, default: 'en' },
+  // Added for Forgot Password Feature
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
@@ -64,12 +72,12 @@ const applicationSchema = new mongoose.Schema({
   resume: String,
   skills: [String],
   answers: [{ question: String, answer: String }],
+  coverLetter: { type: String, default: '' },
   status: { type: String, default: 'Pending' },
   interviewDate: String,
   interviewType: String,
   interviewLink: String,
   interviewLocation: String,
-  interviewNotes: String,
   appliedAt: { type: Date, default: Date.now }
 });
 const Application = mongoose.models.Application || mongoose.model('Application', applicationSchema);
@@ -107,6 +115,8 @@ const notificationSchema = new mongoose.Schema({
 });
 const Notification = mongoose.models.Notification || mongoose.model('Notification', notificationSchema);
 
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
 const parseSkills = (skills) =>
   skills ? String(skills).split(',').map((s) => s.trim()).filter(Boolean) : [];
 
@@ -115,19 +125,13 @@ const parseQuestions = (questions) =>
 
 const calculateMatchScore = (userSkills = [], requiredSkills = [], workHistory = '') => {
   if (!requiredSkills.length) return 50;
-
   const normalizedUserSkills = userSkills.map((s) => String(s).toLowerCase().trim());
   const historyText = String(workHistory || '').toLowerCase();
   const normalizedRequired = requiredSkills.map((s) => String(s).toLowerCase().trim());
-
   const matches = normalizedRequired.filter((required) => {
-    const skillMatch = normalizedUserSkills.some(
-      (userSkill) => userSkill.includes(required) || required.includes(userSkill)
-    );
-    const historyMatch = historyText.includes(required);
-    return skillMatch || historyMatch;
+    const skillMatch = normalizedUserSkills.some((userSkill) => userSkill.includes(required) || required.includes(userSkill));
+    return skillMatch || historyText.includes(required);
   });
-
   return Math.round((matches.length / normalizedRequired.length) * 100);
 };
 
@@ -135,534 +139,181 @@ async function seedModules() {
   const count = await TrainingModule.countDocuments();
   if (count === 0) {
     await TrainingModule.insertMany([
-      {
-        title: 'English Communication for Remote Work',
-        description: 'Improve English speaking, writing, and client communication.',
-        duration: '2 hours'
-      },
-      {
-        title: 'Virtual Assistant 101',
-        description: 'Learn scheduling, inbox handling, and remote office tools.',
-        duration: '1.5 hours'
-      },
-      {
-        title: 'Basic Digital Skills for Freelancing',
-        description: 'Build practical digital work skills for remote jobs.',
-        duration: '2 hours'
-      }
+      { title: 'English Communication for Remote Work', description: 'Improve English speaking, writing, and client communication.', duration: '2 hours' },
+      { title: 'Virtual Assistant 101', description: 'Learn scheduling, inbox handling, and remote office tools.', duration: '1.5 hours' },
+      { title: 'Basic Digital Skills for Freelancing', description: 'Build practical digital work skills for remote jobs.', duration: '2 hours' }
     ]);
   }
 }
 
 async function createNotification(userEmail, title, message, type = 'info') {
-  await Notification.create({
-    userEmail: String(userEmail).toLowerCase(),
-    title,
-    message,
-    type
-  });
+  await Notification.create({ userEmail: String(userEmail).toLowerCase(), title, message, type });
 }
 
-app.get('/', (req, res) => res.send('Backend running ✅'));
+// ─── Auth Routes (Login, Signup, Reset) ────────────────────────────────────
 
 app.post('/api/signup', upload.fields([{ name: 'resume' }, { name: 'photo' }]), async (req, res) => {
   try {
-    const role = String(req.body.role || '').trim();
-    const name = String(req.body.name || '').trim();
-    const email = String(req.body.email || '').trim().toLowerCase();
-    const password = String(req.body.password || '');
-
-    if (!role || !name || !email || !password) {
-      return res.status(400).json({ error: 'Missing fields' });
-    }
-
-    const existing = await User.findOne({ email });
+    const { role, name, email, password } = req.body;
+    const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) return res.status(400).json({ error: 'Email already exists' });
-
+    
     const hashed = await bcrypt.hash(password, 10);
-
     const user = new User({
-      role,
-      name,
-      email,
-      password: hashed,
-      phone: String(req.body.phone || ''),
+      role, name, email: email.toLowerCase(), password: hashed,
+      phone: req.body.phone,
       skills: role === 'jobSeeker' ? parseSkills(req.body.skills) : [],
-      workHistory: String(req.body.workHistory || ''),
-      companyWebsite: String(req.body.companyWebsite || ''),
-      preferredLanguage: String(req.body.preferredLanguage || 'en'),
+      workHistory: req.body.workHistory,
+      companyWebsite: req.body.companyWebsite,
       resume: req.files?.resume?.[0]?.filename || '',
       photo: req.files?.photo?.[0]?.filename || '',
-      isVerified: role === 'jobSeeker'
+      isVerified: role === 'jobSeeker' || role === 'admin'
     });
-
     await user.save();
-    await createNotification(email, 'Welcome', 'Your account was created successfully.', 'success');
+    await createNotification(email, 'Welcome', 'Account created successfully.', 'success');
     res.json({ message: 'Signup successful' });
-  } catch (err) {
-    console.error('SIGNUP ERROR:', err);
-    res.status(500).json({ error: 'Signup failed' });
-  }
+  } catch (err) { res.status(500).json({ error: 'Signup failed' }); }
 });
 
 app.post('/api/login', async (req, res) => {
   try {
-    const email = String(req.body.email || '').trim().toLowerCase();
-    const password = String(req.body.password || '');
-
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ error: 'Invalid email or password' });
-
-    const storedPassword = typeof user.password === 'string' ? user.password : '';
-    let match = false;
-
-    if (storedPassword.startsWith('$2')) {
-      match = await bcrypt.compare(password, storedPassword);
-    } else {
-      match = storedPassword === password;
-    }
-
-    if (!match) return res.status(400).json({ error: 'Invalid email or password' });
-
-    res.json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone || '',
-        skills: user.skills || [],
-        workHistory: user.workHistory || '',
-        resume: user.resume || '',
-        photo: user.photo || '',
-        companyWebsite: user.companyWebsite || '',
-        isVerified: user.isVerified,
-        preferredLanguage: user.preferredLanguage || 'en'
-      }
-    });
-  } catch (err) {
-    console.error('LOGIN ERROR:', err);
-    res.status(500).json({ error: 'Login failed' });
-  }
+    const { email, password } = req.body;
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || user.suspended) return res.status(400).json({ error: 'Invalid credentials or account suspended' });
+    
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ error: 'Invalid credentials' });
+    
+    const userData = user.toObject();
+    delete userData.password;
+    res.json({ user: userData });
+  } catch (err) { res.status(500).json({ error: 'Login failed' }); }
 });
 
-app.put('/api/profile/:email', upload.fields([{ name: 'resume' }, { name: 'photo' }]), async (req, res) => {
+// Forgot Password - Step 1: Generate Token
+app.post('/api/forgot-password', async (req, res) => {
   try {
-    const email = req.params.email.toLowerCase();
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
+    if (!user) return res.status(404).json({ error: "Email not found" });
 
-    const updates = {
-      name: req.body.name ?? user.name,
-      phone: req.body.phone ?? user.phone,
-      preferredLanguage: req.body.preferredLanguage ?? user.preferredLanguage
-    };
+    const token = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
 
-    if (user.role === 'jobSeeker') {
-      updates.skills = req.body.skills ? parseSkills(req.body.skills) : user.skills;
-      updates.workHistory = req.body.workHistory ?? user.workHistory;
-      if (req.files?.resume?.[0]?.filename) updates.resume = req.files.resume[0].filename;
-    }
+    // In a real app, you'd email this. For your demo, we return it.
+    res.json({ message: "Recovery token generated", resetToken: token });
+  } catch (err) { res.status(500).json({ error: "Error generating token" }); }
+});
 
-    if (user.role === 'employer') {
-      updates.companyWebsite = req.body.companyWebsite ?? user.companyWebsite;
-    }
+// Reset Password - Step 2: Use Token
+app.post('/api/reset-password/:token', async (req, res) => {
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    if (!user) return res.status(400).json({ error: "Invalid or expired token" });
 
-    if (req.files?.photo?.[0]?.filename) updates.photo = req.files.photo[0].filename;
+    user.password = await bcrypt.hash(req.body.password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    res.json({ message: "Password updated successfully" });
+  } catch (err) { res.status(500).json({ error: "Reset failed" }); }
+});
 
-    const updatedUser = await User.findOneAndUpdate(
-      { email },
-      updates,
-      { returnDocument: 'after' }
-    ).select('-password');
+// ─── Admin Routes ───────────────────────────────────────────────────────────
 
-    res.json(updatedUser);
-  } catch (err) {
-    console.error('PROFILE UPDATE ERROR:', err);
-    res.status(500).json({ error: 'Failed to update profile' });
-  }
+app.get('/api/admin/users', async (req, res) => {
+  const users = await User.find().select('-password');
+  res.json(users);
 });
 
 app.put('/api/employers/:email/verify', async (req, res) => {
-  try {
-    const updated = await User.findOneAndUpdate(
-      { email: req.params.email.toLowerCase(), role: 'employer' },
-      { isVerified: true },
-      { returnDocument: 'after' }
-    ).select('-password');
-
-    if (!updated) return res.status(404).json({ error: 'Employer not found' });
-
-    await createNotification(updated.email, 'Verification', 'Your employer account has been verified.', 'success');
-    res.json({ employer: updated });
-  } catch (err) {
-    console.error('VERIFY ERROR:', err);
-    res.status(500).json({ error: 'Verification failed' });
-  }
+  const user = await User.findOneAndUpdate(
+    { email: req.params.email.toLowerCase(), role: 'employer' },
+    { isVerified: true, verificationRequested: false },
+    { new: true }
+  );
+  if (user) await createNotification(user.email, 'Verified', 'Your account is now verified.', 'success');
+  res.json(user);
 });
 
-app.post('/api/jobs', async (req, res) => {
-  try {
-    const job = new Job({
-      title: req.body.title,
-      company: req.body.company,
-      category: req.body.category,
-      requiredSkills: parseSkills(req.body.requiredSkills),
-      salaryMin: Number(req.body.salaryMin) || 0,
-      salaryMax: Number(req.body.salaryMax) || 0,
-      locationType: req.body.locationType || 'remote',
-      description: req.body.description || '',
-      employerEmail: String(req.body.employerEmail || '').toLowerCase(),
-      questions: parseQuestions(req.body.questions)
-    });
+app.put('/api/admin/users/:id/suspend', async (req, res) => {
+  const user = await User.findByIdAndUpdate(req.params.id, { suspended: req.body.suspended }, { new: true });
+  res.json(user);
+});
 
-    await job.save();
-    res.json({ message: 'Job posted' });
-  } catch (err) {
-    console.error('POST JOB ERROR:', err);
-    res.status(500).json({ error: 'Failed to post job' });
-  }
+// ─── Job & Application Routes ───────────────────────────────────────────────
+
+app.post('/api/jobs', async (req, res) => {
+  const job = new Job({ ...req.body, requiredSkills: parseSkills(req.body.requiredSkills), questions: parseQuestions(req.body.questions) });
+  await job.save();
+  res.json({ message: 'Job posted' });
 });
 
 app.get('/api/jobs', async (req, res) => {
-  try {
-    const { skill, category, locationType, salaryMin, userEmail, keyword } = req.query;
-    let jobs = await Job.find().sort({ createdAt: -1 });
-
-    if (keyword) {
-      const q = String(keyword).toLowerCase().trim();
-      jobs = jobs.filter((job) => {
-        const title = String(job.title || '').toLowerCase();
-        const company = String(job.company || '').toLowerCase();
-        const cat = String(job.category || '').toLowerCase();
-        const desc = String(job.description || '').toLowerCase();
-        const skills = (job.requiredSkills || []).join(' ').toLowerCase();
-        return title.includes(q) || company.includes(q) || cat.includes(q) || desc.includes(q) || skills.includes(q);
-      });
-    }
-
-    if (skill) {
-      const q = String(skill).toLowerCase().trim();
-      jobs = jobs.filter((job) =>
-        (job.requiredSkills || []).some((s) => String(s).toLowerCase().includes(q))
-      );
-    }
-
-    if (category) {
-      const q = String(category).toLowerCase().trim();
-      jobs = jobs.filter((job) => String(job.category || '').toLowerCase().includes(q));
-    }
-
-    if (locationType) {
-      const q = String(locationType).toLowerCase().trim();
-      jobs = jobs.filter((job) => String(job.locationType || '').toLowerCase() === q);
-    }
-
-    if (salaryMin) {
-      jobs = jobs.filter((job) => Number(job.salaryMax || 0) >= Number(salaryMin));
-    }
-
-    let user = null;
-    if (userEmail) user = await User.findOne({ email: String(userEmail).toLowerCase() });
-
-    const jobsWithMatch = jobs.map((job) => ({
-      ...job.toObject(),
-      matchScore: user
-        ? calculateMatchScore(user.skills || [], job.requiredSkills || [], user.workHistory || '')
-        : 0
-    }));
-
-    res.json(jobsWithMatch);
-  } catch (err) {
-    console.error('GET JOBS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch jobs' });
-  }
+  const { userEmail } = req.query;
+  const jobs = await Job.find().sort({ createdAt: -1 });
+  let user = userEmail ? await User.findOne({ email: userEmail.toLowerCase() }) : null;
+  
+  const jobsWithScore = jobs.map(job => ({
+    ...job.toObject(),
+    matchScore: user ? calculateMatchScore(user.skills, job.requiredSkills, user.workHistory) : 0
+  }));
+  res.json(jobsWithScore);
 });
 
 app.post('/api/apply', async (req, res) => {
-  try {
-    const { jobId, applicantEmail, answers } = req.body;
-    const user = await User.findOne({ email: String(applicantEmail).toLowerCase() });
-    if (!user) return res.status(404).json({ error: 'Applicant not found' });
-
-    const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ error: 'Job not found' });
-
-    const existing = await Application.findOne({ jobId: job._id, email: user.email });
-    if (existing) return res.status(400).json({ error: 'You already applied for this job' });
-
-    const application = await Application.create({
-      jobId: job._id,
-      jobTitle: job.title,
-      employerEmail: job.employerEmail,
-      name: user.name,
-      email: user.email,
-      resume: user.resume || '',
-      skills: user.skills || [],
-      answers: Array.isArray(answers) ? answers : [],
-      status: 'Pending'
-    });
-
-    await createNotification(user.email, 'Application Submitted', `You applied for ${job.title}.`, 'success');
-    await createNotification(job.employerEmail, 'New Applicant', `${user.name} applied for ${job.title}.`, 'info');
-
-    res.json({ message: 'Applied successfully', application });
-  } catch (err) {
-    console.error('APPLY ERROR:', err);
-    res.status(500).json({ error: 'Failed to apply' });
-  }
+  const { jobId, applicantEmail, answers, coverLetter } = req.body;
+  const user = await User.findOne({ email: applicantEmail.toLowerCase() });
+  const job = await Job.findById(jobId);
+  
+  const appln = await Application.create({
+    jobId, jobTitle: job.title, employerEmail: job.employerEmail,
+    name: user.name, email: user.email, resume: user.resume, skills: user.skills,
+    answers, coverLetter, status: 'Pending'
+  });
+  await createNotification(job.employerEmail, 'New Applicant', `${user.name} applied for ${job.title}`);
+  res.json(appln);
 });
 
-app.get('/api/my-applications', async (req, res) => {
-  try {
-    const email = String(req.query.email || '').toLowerCase();
-    const apps = await Application.find({ email }).sort({ appliedAt: -1 });
-    res.json(apps);
-  } catch (err) {
-    console.error('MY APPLICATIONS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch applications' });
-  }
-});
-
-app.get('/api/applications/employer/:email', async (req, res) => {
-  try {
-    const apps = await Application.find({
-      employerEmail: String(req.params.email || '').toLowerCase()
-    }).sort({ appliedAt: -1 });
-    res.json(apps);
-  } catch (err) {
-    console.error('EMPLOYER APPLICATIONS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch applications' });
-  }
-});
-
-app.put('/api/applications/:id', async (req, res) => {
-  try {
-    const existing = await Application.findById(req.params.id);
-    if (!existing) return res.status(404).json({ error: 'Application not found' });
-
-    const updates = {};
-    if (req.body.status) updates.status = req.body.status;
-    if (req.body.interviewDate) updates.interviewDate = req.body.interviewDate;
-    if (req.body.interviewType) updates.interviewType = req.body.interviewType;
-    if (req.body.interviewLink) updates.interviewLink = req.body.interviewLink;
-    if (req.body.interviewLocation) updates.interviewLocation = req.body.interviewLocation;
-    if (req.body.interviewNotes) updates.interviewNotes = req.body.interviewNotes;
-
-    const updated = await Application.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { returnDocument: 'after' }
-    );
-
-    if (updates.status) {
-      await createNotification(
-        existing.email,
-        'Application Update',
-        `Your application for ${existing.jobTitle} is now ${updates.status}.`,
-        'info'
-      );
-    }
-
-    if (updates.interviewDate) {
-      const meetingInfo = updates.interviewType === 'online'
-        ? `Meeting link: ${updates.interviewLink || 'Not provided'}`
-        : `Location: ${updates.interviewLocation || 'Not provided'}`;
-
-      await createNotification(
-        existing.email,
-        'Interview Scheduled',
-        `Your interview for ${existing.jobTitle} is scheduled for ${updates.interviewDate}. ${meetingInfo}`,
-        'success'
-      );
-    }
-
-    res.json({ message: 'Application updated', application: updated });
-  } catch (err) {
-    console.error('UPDATE APPLICATION ERROR:', err);
-    res.status(500).json({ error: 'Failed to update application' });
-  }
-});
+// ─── Training & Certificates ───────────────────────────────────────────────
 
 app.get('/api/training-modules', async (req, res) => {
-  try {
-    await seedModules();
-    res.json(await TrainingModule.find());
-  } catch (err) {
-    console.error('TRAINING MODULES ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch modules' });
-  }
-});
-
-app.get('/api/training-progress/:email', async (req, res) => {
-  try {
-    const progress = await TrainingProgress.find({
-      userEmail: String(req.params.email || '').toLowerCase()
-    });
-    res.json(progress);
-  } catch (err) {
-    console.error('TRAINING PROGRESS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch progress' });
-  }
+  await seedModules();
+  res.json(await TrainingModule.find());
 });
 
 app.post('/api/training-progress/complete', async (req, res) => {
-  try {
-    const { userEmail, moduleId } = req.body;
-    const email = String(userEmail).toLowerCase();
-    const module = await TrainingModule.findById(moduleId);
-
-    const existing = await TrainingProgress.findOne({ userEmail: email, moduleId });
-    if (existing) {
-      existing.completed = true;
-      existing.completedAt = new Date();
-      await existing.save();
-    } else {
-      await TrainingProgress.create({
-        userEmail: email,
-        moduleId,
-        completed: true,
-        completedAt: new Date()
-      });
-    }
-
-    const certificateExists = await Certificate.findOne({ userEmail: email, moduleId });
-    if (!certificateExists && module) {
-      await Certificate.create({
-        userEmail: email,
-        moduleId,
-        moduleTitle: module.title
-      });
-    }
-
-    if (module) {
-      await createNotification(email, 'Certificate Issued', `You completed ${module.title} and earned a certificate.`, 'success');
-    }
-
-    res.json({ message: 'Completed' });
-  } catch (err) {
-    console.error('COMPLETE MODULE ERROR:', err);
-    res.status(500).json({ error: 'Failed to save progress' });
-  }
+  const { userEmail, moduleId } = req.body;
+  const module = await TrainingModule.findById(moduleId);
+  await TrainingProgress.findOneAndUpdate(
+    { userEmail: userEmail.toLowerCase(), moduleId },
+    { completed: true, completedAt: new Date() },
+    { upsert: true }
+  );
+  await Certificate.create({ userEmail: userEmail.toLowerCase(), moduleId, moduleTitle: module.title });
+  await createNotification(userEmail, 'Certificate Issued', `Completed: ${module.title}`, 'success');
+  res.json({ message: 'Completed' });
 });
 
 app.get('/api/certificates/:email', async (req, res) => {
-  try {
-    const certificates = await Certificate.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ issuedAt: -1 });
-    res.json(certificates);
-  } catch (err) {
-    console.error('CERTIFICATES ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch certificates' });
-  }
+  const certs = await Certificate.find({ userEmail: req.params.email.toLowerCase() });
+  res.json(certs);
 });
 
 app.get('/api/notifications/:email', async (req, res) => {
-  try {
-    const notifications = await Notification.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ createdAt: -1 });
-    res.json(notifications);
-  } catch (err) {
-    console.error('NOTIFICATIONS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch notifications' });
-  }
+  const notes = await Notification.find({ userEmail: req.params.email.toLowerCase() }).sort({ createdAt: -1 });
+  res.json(notes);
 });
 
-app.put('/api/notifications/read/:id', async (req, res) => {
-  try {
-    const updated = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { isRead: true },
-      { returnDocument: 'after' }
-    );
-    res.json(updated);
-  } catch (err) {
-    console.error('MARK READ ERROR:', err);
-    res.status(500).json({ error: 'Failed to update notification' });
-  }
-});
+// ─── Start Server ───────────────────────────────────────────────────────────
 
-app.get('/api/dashboard/jobseeker/:email', async (req, res) => {
-  try {
-    const email = String(req.params.email || '').toLowerCase();
-    const totalApplications = await Application.countDocuments({ email });
-    const accepted = await Application.countDocuments({ email, status: 'Accepted' });
-    const pending = await Application.countDocuments({ email, status: 'Pending' });
-    const completedCourses = await TrainingProgress.countDocuments({ userEmail: email, completed: true });
-    const certificates = await Certificate.countDocuments({ userEmail: email });
-
-    res.json({ totalApplications, accepted, pending, completedCourses, certificates });
-  } catch (err) {
-    console.error('JOB SEEKER DASHBOARD ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch dashboard' });
-  }
-});
-
-app.get('/api/dashboard/employer/:email', async (req, res) => {
-  try {
-    const email = String(req.params.email || '').toLowerCase();
-    const totalJobs = await Job.countDocuments({ employerEmail: email });
-    const totalApplications = await Application.countDocuments({ employerEmail: email });
-    const shortlisted = await Application.countDocuments({ employerEmail: email, status: 'Shortlisted' });
-    const interviews = await Application.countDocuments({ employerEmail: email, status: 'Interview Scheduled' });
-
-    res.json({ totalJobs, totalApplications, shortlisted, interviews });
-  } catch (err) {
-    console.error('EMPLOYER DASHBOARD ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch dashboard' });
-  }
-});
-
-app.get('/api/dashboard/admin', async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
-    const totalJobSeekers = await User.countDocuments({ role: 'jobSeeker' });
-    const totalEmployers = await User.countDocuments({ role: 'employer' });
-    const totalJobs = await Job.countDocuments();
-    const totalApplications = await Application.countDocuments();
-    const totalCertificates = await Certificate.countDocuments();
-
-    res.json({
-      totalUsers,
-      totalJobSeekers,
-      totalEmployers,
-      totalJobs,
-      totalApplications,
-      totalCertificates
-    });
-  } catch (err) {
-    console.error('ADMIN DASHBOARD ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch admin dashboard' });
-  }
-});
-
-app.get('/api/admin/users', async (req, res) => {
-  try {
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
-    res.json(users);
-  } catch (err) {
-    console.error('ADMIN USERS ERROR:', err);
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(async () => {
+const PORT = process.env.PORT || 5000;
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/somtalent')
+  .then(() => {
     console.log('MongoDB connected');
-    await seedModules();
-
-    const adminExists = await User.findOne({ role: 'admin', email: 'admin@somtalent.com' });
-    if (!adminExists) {
-      const hashed = await bcrypt.hash('admin123', 10);
-      await User.create({
-        role: 'admin',
-        name: 'System Admin',
-        email: 'admin@somtalent.com',
-        password: hashed,
-        isVerified: true,
-        preferredLanguage: 'en'
-      });
-    }
-
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-  })
-  .catch((err) => console.log(err));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  });
