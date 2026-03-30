@@ -489,7 +489,7 @@ function App() {
       formData.append('companyWebsite', signupData.companyWebsite);
       formData.append('preferredLanguage', signupData.preferredLanguage);
       if (signupResume) formData.append('resume', signupResume);
-      await fetchJSON(`${API}/signup`, { method: 'POST', body: formData });
+      await fetchJSON(`${API}/api/signup`, { method: 'POST', body: formData });
       setSignupMessage('Signed up successfully. Please log in.');
       setSignupData({ name: '', email: '', phone: '', password: '', skills: '', workHistory: '', companyWebsite: '', preferredLanguage: 'en' });
       setSignupResume(null);
@@ -507,7 +507,7 @@ function App() {
     if (Object.keys(errors).length > 0) { setLoginValidationErrors(errors); return; }
     setLoginError('');
     try {
-      const data = await fetchJSON(`${API}/login`, {
+      const data = await fetchJSON(`${API}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData)
@@ -667,7 +667,7 @@ function App() {
       if (currentUser.role === 'employer') {
         formData.append('companyWebsite', profileForm.companyWebsite);
       }
-      const updatedUser = await fetchJSON(`${API}/profile/${currentUser.email}`, {
+      const updatedUser = await fetchJSON(`${API}/api/profile/${currentUser.email}`, {
         method: 'PUT',
         body: formData
       });
