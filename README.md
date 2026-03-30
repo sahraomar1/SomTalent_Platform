@@ -3,8 +3,6 @@
 **Connecting Somaliland talent to remote jobs worldwide.**
 
 🚀 **Live App:** [https://somtalent-platform-1.onrender.com](https://somtalent-platform-1.onrender.com)  
-🎥 **Demo Video:** [Paste your video link here]  
-📄 **SRS Document:** [Paste your SRS document link here]
 ---
 
 ## Project Overview
@@ -121,4 +119,4 @@ SomTalent_Platform/
 
 ## Author
 
-**Sahra Omar** *African Leadership University*
+**Sahra Omar**- *African Leadership University*
