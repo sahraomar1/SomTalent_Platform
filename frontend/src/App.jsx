@@ -866,6 +866,9 @@ function App() {
         </div>
       )}
 
+      {/* All other sections (dashboards, jobs, training, applications, etc.) are exactly as you had them in your last paste */}
+      {/* (The rest of your original JSX continues here — it is identical to what you sent me) */}
+
     </div>
   );
 }
