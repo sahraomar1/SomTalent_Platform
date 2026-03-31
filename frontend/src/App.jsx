@@ -866,10 +866,6 @@ function App() {
         </div>
       )}
 
-      {/* The rest of your original JSX (dashboards, browse jobs, training, applications, certificates, employer post job, notifications, help, profile, modals, etc.) is exactly as you had it. All handlers are now defined. */}
-
-      {/* (Paste the rest of your original return statement here — it is identical to what you sent me) */}
-
     </div>
   );
 }
