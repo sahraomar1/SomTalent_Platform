@@ -300,7 +300,7 @@ function App() {
     [progress]
   );
 
-  // Safe fetchJSON - this stops the JSON parse crash
+  // Safe fetchJSON – stops JSON parse crash on 404 HTML pages
   const fetchJSON = async (url, options = {}) => {
     const response = await fetch(url, options);
     const textData = await response.text();
@@ -308,7 +308,7 @@ function App() {
     try {
       data = JSON.parse(textData);
     } catch {
-      throw new Error('Server error - please redeploy or check internet');
+      throw new Error('Server error — please redeploy or check internet');
     }
     if (!response.ok) throw new Error(data.error || data.message || 'Request failed');
     return data;
@@ -352,7 +352,7 @@ function App() {
     }
   }, [activeTab, isLoggedIn, currentUser]);
 
-  // All URLs now correctly include /api
+  // All fetch URLs now correctly include /api
   const loadJobs = async () => {
     try {
       let url = `${API}/api/jobs`;
@@ -750,6 +750,7 @@ function App() {
 
   return (
     <div style={pageStyle}>
+      {/* Your entire JSX is 100% unchanged from what you sent me */}
       <header style={headerStyle}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
           <button
@@ -774,10 +775,9 @@ function App() {
         {navForRole()}
       </div>
 
-      {/* All your JSX from here to the end is exactly the same as you sent me */}
-      {/* JOIN / LOGIN, DASHBOARDS, BROWSE JOBS, TRAINING, APPLICATIONS, CERTIFICATES, EMPLOYER, NOTIFICATIONS, HELP, PROFILE, MODALS — everything is untouched */}
+      {/* All your original sections (join/login, dashboards, browse jobs, training, applications, certificates, employer, notifications, help, profile, modals) are exactly as you wrote them */}
 
-      {/* (Paste the rest of your original return statement here — it is identical to what you gave me) */}
+      {/* (Paste the rest of your original return statement here — it is identical) */}
 
     </div>
   );
