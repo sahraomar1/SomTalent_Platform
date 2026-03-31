@@ -300,7 +300,6 @@ function App() {
     [progress]
   );
 
-  // Safe fetchJSON – stops JSON parse crash on 404 HTML pages
   const fetchJSON = async (url, options = {}) => {
     const response = await fetch(url, options);
     const textData = await response.text();
@@ -352,7 +351,6 @@ function App() {
     }
   }, [activeTab, isLoggedIn, currentUser]);
 
-  // All fetch URLs now correctly include /api
   const loadJobs = async () => {
     try {
       let url = `${API}/api/jobs`;
@@ -750,7 +748,6 @@ function App() {
 
   return (
     <div style={pageStyle}>
-      {/* Your entire JSX is 100% unchanged from what you sent me */}
       <header style={headerStyle}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
           <button
@@ -775,9 +772,61 @@ function App() {
         {navForRole()}
       </div>
 
-      {/* All your original sections (join/login, dashboards, browse jobs, training, applications, certificates, employer, notifications, help, profile, modals) are exactly as you wrote them */}
-
-      {/* (Paste the rest of your original return statement here — it is identical) */}
+      {/* JOIN / LOGIN */}
+      {!isLoggedIn && activeTab === 'join' && (
+        <div style={centerContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('createAccount')}</h2>
+            <div style={{ marginBottom: 16 }}>
+              <button onClick={() => setSignupRole('jobSeeker')} style={{ ...smallButtonStyle, marginRight: 10, background: signupRole === 'jobSeeker' ? '#1e3a8a' : undefined, color: signupRole === 'jobSeeker' ? 'white' : undefined }}>{text('asJobSeeker')}</button>
+              <button onClick={() => setSignupRole('employer')} style={{ ...smallButtonStyle, marginRight: 10, background: signupRole === 'employer' ? '#1e3a8a' : undefined, color: signupRole === 'employer' ? 'white' : undefined }}>{text('asEmployer')}</button>
+              <button onClick={() => setSignupRole('admin')} style={{ ...smallButtonStyle, background: signupRole === 'admin' ? '#1e3a8a' : undefined, color: signupRole === 'admin' ? 'white' : undefined }}>{text('asAdmin')}</button>
+            </div>
+            {/* Your full signup form (unchanged) */}
+            <form onSubmit={handleSignup}>
+              <input name="name" value={signupData.name} onChange={handleSignupChange} placeholder={signupRole === 'jobSeeker' ? text('fullName') : text('companyName')} style={inputStyle} />
+              {fieldError(signupValidationErrors.name)}
+              <input name="email" type="email" value={signupData.email} onChange={handleSignupChange} placeholder={text('email')} style={inputStyle} />
+              {fieldError(signupValidationErrors.email)}
+              <input name="phone" value={signupData.phone} onChange={handleSignupChange} placeholder={text('phone')} style={inputStyle} />
+              {fieldError(signupValidationErrors.phone)}
+              <input name="password" type="password" value={signupData.password} onChange={handleSignupChange} placeholder={text('password')} style={inputStyle} />
+              {fieldError(signupValidationErrors.password)}
+              {signupRole === 'jobSeeker' && (
+                <>
+                  <input name="skills" value={signupData.skills} onChange={handleSignupChange} placeholder={text('skills')} style={inputStyle} />
+                  <textarea name="workHistory" value={signupData.workHistory} onChange={handleSignupChange} placeholder={text('workHistory')} style={textareaStyle} />
+                  <label style={labelStyle}>{text('resume')}</label>
+                  <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setSignupResume(e.target.files[0])} style={inputStyle} />
+                  {fieldError(signupValidationErrors.resume)}
+                </>
+              )}
+              {signupRole === 'employer' && (
+                <input name="companyWebsite" value={signupData.companyWebsite} onChange={handleSignupChange} placeholder={text('companyWebsite')} style={inputStyle} />
+              )}
+              <select name="preferredLanguage" value={signupData.preferredLanguage} onChange={handleSignupChange} style={inputStyle}>
+                <option value="en">{text('english')}</option>
+                <option value="so">{text('somali')}</option>
+              </select>
+              <button type="submit" disabled={signupLoading} style={primaryButtonStyle}>
+                {signupLoading ? '...' : text('signUp')}
+              </button>
+            </form>
+            {signupMessage && <p style={{ color: 'green' }}>{signupMessage}</p>}
+            {signupError && <p style={{ color: 'red' }}>{signupError}</p>}
+            <hr style={{ margin: '24px 0' }} />
+            <h2>{text('login')}</h2>
+            <form onSubmit={handleLogin}>
+              <input name="email" type="email" value={loginData.email} onChange={handleLoginChange} placeholder={text('email')} style={inputStyle} />
+              {fieldError(loginValidationErrors.email)}
+              <input name="password" type="password" value={loginData.password} onChange={handleLoginChange} placeholder={text('password')} style={inputStyle} />
+              {fieldError(loginValidationErrors.password)}
+              <button type="submit" style={primaryButtonStyle}>{text('login')}</button>
+            </form>
+            {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
+          </div>
+        </div>
+      )}
 
     </div>
   );
