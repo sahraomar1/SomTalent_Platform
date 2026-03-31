@@ -869,6 +869,370 @@ function App() {
         </div>
       )}
 
+      {/* JOB SEEKER DASHBOARD */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('jobSeekerDashboard')}</h2>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.totalApplications ?? 0}</p><p>{text('totalApplications')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.accepted ?? 0}</p><p>{text('accepted')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.pending ?? 0}</p><p>{text('pending')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.completedCourses ?? 0}</p><p>{text('completedCourses')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.certificates ?? 0}</p><p>{text('certificatesCount')}</p></div>
+          </div>
+          <h3>{text('browseJobs')}</h3>
+          {jobs.length === 0 ? <p>{text('noJobs')}</p> : jobs.map((job) => (
+            <div key={job._id} style={cardStyle}>
+              <h3 style={{ margin: '0 0 6px' }}>{job.title} — {job.company}</h3>
+              <p style={{ margin: '0 0 6px', color: '#64748b' }}>{job.category} | {job.locationType} | ${job.salaryMin}–${job.salaryMax}</p>
+              <p style={{ margin: '0 0 10px' }}>{job.description}</p>
+              <p style={{ margin: '0 0 10px', color: '#1d4ed8', fontWeight: 600 }}>{text('matchScore')}: {job.matchScore}%</p>
+              {(job.questions || []).map((q, i) => (
+                <div key={i} style={{ marginBottom: 8 }}>
+                  <label style={labelStyle}>{q}</label>
+                  <input
+                    placeholder={text('answerQuestion')}
+                    style={inputStyle}
+                    value={questionAnswers[job._id]?.[i] || ''}
+                    onChange={(e) => setQuestionAnswers((prev) => ({ ...prev, [job._id]: { ...prev[job._id], [i]: e.target.value } }))}
+                  />
+                </div>
+              ))}
+              <label style={labelStyle}>{text('coverLetter')}</label>
+              <textarea
+                placeholder={text('coverLetter')}
+                style={textareaStyle}
+                value={coverLetters[job._id] || ''}
+                onChange={(e) => setCoverLetters((prev) => ({ ...prev, [job._id]: e.target.value }))}
+              />
+              <button onClick={() => handleApply(job)} style={primaryButtonStyle}>{text('apply')}</button>
+            </div>
+          ))}
+          {applyMessage && <p style={{ color: applyMessage.includes('success') ? 'green' : 'red' }}>{applyMessage}</p>}
+        </div>
+      )}
+
+      {/* BROWSE JOBS */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'jobs' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('browseJobs')}</h2>
+          <div style={{ ...cardStyle, marginBottom: 24 }}>
+            <h3 style={{ marginTop: 0 }}>{text('filters')}</h3>
+            <input name="keyword" value={filters.keyword} onChange={handleFilterChange} placeholder={text('keywordPlaceholder')} style={inputStyle} />
+            <input name="skill" value={filters.skill} onChange={handleFilterChange} placeholder={text('skill')} style={inputStyle} />
+            <input name="category" value={filters.category} onChange={handleFilterChange} placeholder={text('category')} style={inputStyle} />
+            <select name="locationType" value={filters.locationType} onChange={handleFilterChange} style={inputStyle}>
+              <option value="">{text('allLocations')}</option>
+              <option value="remote">{text('remote')}</option>
+              <option value="onsite">{text('onsite')}</option>
+              <option value="hybrid">{text('hybrid')}</option>
+            </select>
+            <input name="salaryMin" type="number" value={filters.salaryMin} onChange={handleFilterChange} placeholder={text('minimumSalary')} style={inputStyle} />
+            <button onClick={loadJobs} style={primaryButtonStyle}>{text('applyFilters')}</button>
+          </div>
+          {jobs.length === 0 ? <p>{text('noJobs')}</p> : jobs.map((job) => (
+            <div key={job._id} style={cardStyle}>
+              <h3 style={{ margin: '0 0 6px' }}>{job.title} — {job.company}</h3>
+              <p style={{ margin: '0 0 6px', color: '#64748b' }}>{job.category} | {job.locationType} | ${job.salaryMin}–${job.salaryMax}</p>
+              <p style={{ margin: '0 0 10px' }}>{job.description}</p>
+              <p style={{ margin: '0 0 6px' }}><strong>{text('requiredSkills')}:</strong> {(job.requiredSkills || []).join(', ')}</p>
+              <p style={{ margin: '0 0 10px', color: '#1d4ed8', fontWeight: 600 }}>{text('matchScore')}: {job.matchScore}%</p>
+              {(job.questions || []).map((q, i) => (
+                <div key={i} style={{ marginBottom: 8 }}>
+                  <label style={labelStyle}>{q}</label>
+                  <input
+                    placeholder={text('answerQuestion')}
+                    style={inputStyle}
+                    value={questionAnswers[job._id]?.[i] || ''}
+                    onChange={(e) => setQuestionAnswers((prev) => ({ ...prev, [job._id]: { ...prev[job._id], [i]: e.target.value } }))}
+                  />
+                </div>
+              ))}
+              <label style={labelStyle}>{text('coverLetter')}</label>
+              <textarea
+                placeholder={text('coverLetter')}
+                style={textareaStyle}
+                value={coverLetters[job._id] || ''}
+                onChange={(e) => setCoverLetters((prev) => ({ ...prev, [job._id]: e.target.value }))}
+              />
+              <button onClick={() => handleApply(job)} style={primaryButtonStyle}>{text('apply')}</button>
+            </div>
+          ))}
+          {applyMessage && <p style={{ color: applyMessage.includes('success') ? 'green' : 'red' }}>{applyMessage}</p>}
+        </div>
+      )}
+
+      {/* MY APPLICATIONS */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'applications' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('applications')}</h2>
+          {applications.length === 0 ? <p>{text('noApplications')}</p> : applications.map((app) => (
+            <div key={app._id} style={cardStyle}>
+              <h3 style={{ margin: '0 0 6px' }}>{app.jobTitle}</h3>
+              <p style={{ margin: '0 0 8px' }}><span style={getStatusBadgeStyle(app.status)}>{app.status}</span></p>
+              <p style={{ margin: '0 0 6px', color: '#64748b' }}>{text('applied')}: {new Date(app.appliedAt).toLocaleDateString()}</p>
+              {app.interviewDate && (
+                <p style={{ margin: '0 0 6px', color: '#6d28d9', fontWeight: 600 }}>
+                  {text('interviewDate')}: {app.interviewDate}
+                  {app.interviewType === 'online' && app.interviewLink && <> — <a href={app.interviewLink} target="_blank" rel="noreferrer">{text('meetingLink')}</a></>}
+                  {app.interviewType === 'physical' && app.interviewLocation && <> — {app.interviewLocation}</>}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* TRAINING */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'training' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('training')}</h2>
+          {modules.length === 0 ? <p>{text('noModules')}</p> : modules.map((mod) => (
+            <div key={mod._id} style={cardStyle}>
+              <h3 style={{ margin: '0 0 6px' }}>{mod.title}</h3>
+              <p style={{ margin: '0 0 6px' }}>{mod.description}</p>
+              <p style={{ margin: '0 0 10px', color: '#64748b' }}>Duration: {mod.duration}</p>
+              {completedModuleIds.has(String(mod._id))
+                ? <span style={{ ...getStatusBadgeStyle('Accepted') }}>{text('completed')}</span>
+                : <button onClick={() => markModuleComplete(mod._id)} style={primaryButtonStyle}>{text('completeModule')}</button>
+              }
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* CERTIFICATES */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'certificates' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('certificates')}</h2>
+          {certificates.length === 0 ? <p>{text('noCertificates')}</p> : certificates.map((cert) => (
+            <div key={cert._id} style={cardStyle}>
+              <h3 style={{ margin: '0 0 6px' }}>🏆 {cert.moduleTitle}</h3>
+              <p style={{ margin: 0, color: '#64748b' }}>{text('issuedAt')}: {new Date(cert.issuedAt).toLocaleDateString()}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* NOTIFICATIONS */}
+      {isLoggedIn && activeTab === 'notifications' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('notifications')}</h2>
+          {notifications.length === 0 ? <p>{text('noNotifications')}</p> : notifications.map((n) => (
+            <div key={n._id} style={{ ...cardStyle, opacity: n.isRead ? 0.6 : 1, borderLeft: n.isRead ? '4px solid #e2e8f0' : '4px solid #1e3a8a' }}>
+              <h4 style={{ margin: '0 0 4px' }}>{n.title}</h4>
+              <p style={{ margin: '0 0 8px' }}>{n.message}</p>
+              <p style={{ margin: '0 0 8px', color: '#94a3b8', fontSize: 13 }}>{new Date(n.createdAt).toLocaleString()}</p>
+              {!n.isRead && <button onClick={() => markNotificationRead(n._id)} style={smallButtonStyle}>{text('markRead')}</button>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* HELP */}
+      {isLoggedIn && currentUser?.role === 'jobSeeker' && activeTab === 'help' && (
+        <div style={centerContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('help')}</h2>
+            <p>{text('helpIntro')}</p>
+            <h4>{text('faq1')}</h4><p>{text('faq1a')}</p>
+            <h4>{text('faq2')}</h4><p>{text('faq2a')}</p>
+            <h4>{text('faq3')}</h4><p>{text('faq3a')}</p>
+          </div>
+        </div>
+      )}
+
+      {/* PROFILE */}
+      {isLoggedIn && activeTab === 'profile' && (
+        <div style={centerContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('profile')}</h2>
+            <form onSubmit={updateProfile}>
+              <label style={labelStyle}>{text('fullName')}</label>
+              <input name="name" value={profileForm.name} onChange={handleProfileChange} style={inputStyle} />
+              <label style={labelStyle}>{text('phone')}</label>
+              <input name="phone" value={profileForm.phone} onChange={handleProfileChange} style={inputStyle} />
+              {currentUser.role === 'jobSeeker' && (
+                <>
+                  <label style={labelStyle}>{text('skills')}</label>
+                  <input name="skills" value={profileForm.skills} onChange={handleProfileChange} style={inputStyle} />
+                  <label style={labelStyle}>{text('workHistory')}</label>
+                  <textarea name="workHistory" value={profileForm.workHistory} onChange={handleProfileChange} style={textareaStyle} />
+                  <label style={labelStyle}>{text('resume')}</label>
+                  <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setProfileResume(e.target.files[0])} style={inputStyle} />
+                  {currentUser.resume && (
+                    <p><a href={`${API}/uploads/${currentUser.resume}`} target="_blank" rel="noreferrer">{text('viewResume')}</a></p>
+                  )}
+                </>
+              )}
+              {currentUser.role === 'employer' && (
+                <>
+                  <label style={labelStyle}>{text('companyWebsite')}</label>
+                  <input name="companyWebsite" value={profileForm.companyWebsite} onChange={handleProfileChange} style={inputStyle} />
+                  <p>
+                    {currentUser.isVerified
+                      ? <span style={getStatusBadgeStyle('Accepted')}>✅ {text('verified')}</span>
+                      : <><span style={getStatusBadgeStyle('Pending')}>{text('pendingVerification')}</span> <button type="button" onClick={requestVerification} style={{ ...smallButtonStyle, marginLeft: 10 }}>{text('verifyCompany')}</button></>
+                    }
+                  </p>
+                </>
+              )}
+              <label style={labelStyle}>{text('preferredLanguage')}</label>
+              <select name="preferredLanguage" value={profileForm.preferredLanguage} onChange={handleProfileChange} style={inputStyle}>
+                <option value="en">{text('english')}</option>
+                <option value="so">{text('somali')}</option>
+              </select>
+              <button type="submit" style={primaryButtonStyle}>{text('saveProfile')}</button>
+            </form>
+            {profileMessage && <p style={{ color: 'green' }}>{profileMessage}</p>}
+            {profileError && <p style={{ color: 'red' }}>{profileError}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* EMPLOYER DASHBOARD */}
+      {isLoggedIn && currentUser?.role === 'employer' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('employerDashboard')}</h2>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.totalJobs ?? 0}</p><p>{text('totalJobs')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.totalApplications ?? 0}</p><p>{text('totalApplications')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.shortlisted ?? 0}</p><p>{text('shortlisted')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{dashboardData?.interviews ?? 0}</p><p>{text('interviews')}</p></div>
+          </div>
+          <h3>Applicants</h3>
+          {employerApplications.length === 0 ? <p>{text('noApplications')}</p> : employerApplications.map((app) => (
+            <div key={app._id} style={professionalApplicantCardStyle}>
+              <div style={applicantTopRowStyle}>
+                <div>
+                  <h3 style={{ margin: '0 0 4px' }}>{app.name}</h3>
+                  <p style={{ margin: '0 0 4px', color: '#64748b' }}>{app.email}</p>
+                  <p style={{ margin: '0 0 4px', color: '#64748b' }}>Applied for: <strong>{app.jobTitle}</strong></p>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: 13 }}>{new Date(app.appliedAt).toLocaleDateString()}</p>
+                </div>
+                <span style={getStatusBadgeStyle(app.status)}>{app.status}</span>
+              </div>
+              {(app.skills || []).length > 0 && <p style={{ margin: '0 0 8px' }}><strong>{text('skills')}:</strong> {app.skills.join(', ')}</p>}
+              {app.resume && <p style={{ margin: '0 0 8px' }}><a href={`${API}/uploads/${app.resume}`} target="_blank" rel="noreferrer">{text('viewResume')}</a></p>}
+              {(app.answers || []).length > 0 && (
+                <div style={{ marginBottom: 10 }}>
+                  <strong>{text('answers')}:</strong>
+                  {app.answers.map((a, i) => (
+                    <div key={i} style={{ marginTop: 6, padding: 10, background: '#f8fafc', borderRadius: 8 }}>
+                      <p style={{ margin: '0 0 4px', fontWeight: 600 }}>{a.question}</p>
+                      <p style={{ margin: 0 }}>{a.answer}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div style={actionRowStyle}>
+                <button onClick={() => updateApplicationStatus(app._id, 'Shortlisted')} style={secondaryButtonStyle}>{text('shortlist')}</button>
+                <button onClick={() => updateApplicationStatus(app._id, 'Accepted')} style={successButtonStyle}>{text('accept')}</button>
+                <button onClick={() => updateApplicationStatus(app._id, 'Rejected')} style={dangerButtonStyle}>{text('reject')}</button>
+              </div>
+              {(app.status === 'Accepted' || app.status === 'Interview Scheduled') && (
+                <div style={interviewBoxStyle}>
+                  <h4 style={{ margin: '0 0 10px' }}>{text('scheduleInterview')}</h4>
+                  <label style={labelStyle}>{text('interviewType')}</label>
+                  <select style={inputStyle} value={interviewTypes[app._id] || ''} onChange={(e) => setInterviewTypes((p) => ({ ...p, [app._id]: e.target.value }))}>
+                    <option value="">{text('interviewType')}</option>
+                    <option value="online">{text('online')}</option>
+                    <option value="physical">{text('physical')}</option>
+                  </select>
+                  <label style={labelStyle}>{text('interviewDate')}</label>
+                  <input type="datetime-local" style={inputStyle} value={interviewDates[app._id] || ''} onChange={(e) => setInterviewDates((p) => ({ ...p, [app._id]: e.target.value }))} />
+                  {interviewTypes[app._id] === 'online' && (
+                    <><label style={labelStyle}>{text('meetingLink')}</label>
+                    <input style={inputStyle} placeholder="https://zoom.us/..." value={interviewLinks[app._id] || ''} onChange={(e) => setInterviewLinks((p) => ({ ...p, [app._id]: e.target.value }))} /></>
+                  )}
+                  {interviewTypes[app._id] === 'physical' && (
+                    <><label style={labelStyle}>{text('meetingLocation')}</label>
+                    <input style={inputStyle} placeholder="Office address..." value={interviewLocations[app._id] || ''} onChange={(e) => setInterviewLocations((p) => ({ ...p, [app._id]: e.target.value }))} /></>
+                  )}
+                  <label style={labelStyle}>{text('interviewNotes')}</label>
+                  <textarea style={textareaStyle} value={interviewNotes[app._id] || ''} onChange={(e) => setInterviewNotes((p) => ({ ...p, [app._id]: e.target.value }))} />
+                  <button onClick={() => scheduleInterview(app._id)} style={primaryButtonStyle}>{text('scheduleInterview')}</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* POST JOB */}
+      {isLoggedIn && currentUser?.role === 'employer' && activeTab === 'employer' && (
+        <div style={centerContainerStyle}>
+          <div style={cardStyle}>
+            <h2>{text('postJob')}</h2>
+            <form onSubmit={handlePostJob}>
+              <label style={labelStyle}>{text('title')}</label>
+              <input name="title" style={inputStyle} required />
+              <label style={labelStyle}>{text('category')}</label>
+              <input name="category" style={inputStyle} />
+              <label style={labelStyle}>{text('requiredSkills')}</label>
+              <input name="requiredSkills" style={inputStyle} />
+              <label style={labelStyle}>{text('minSalary')}</label>
+              <input name="salaryMin" type="number" style={inputStyle} />
+              <label style={labelStyle}>{text('maxSalary')}</label>
+              <input name="salaryMax" type="number" style={inputStyle} />
+              <label style={labelStyle}>{text('locationType')}</label>
+              <select name="locationType" style={inputStyle}>
+                <option value="remote">{text('remote')}</option>
+                <option value="onsite">{text('onsite')}</option>
+                <option value="hybrid">{text('hybrid')}</option>
+              </select>
+              <label style={labelStyle}>{text('description')}</label>
+              <textarea name="description" style={textareaStyle} />
+              <label style={labelStyle}>{text('screeningQuestions')}</label>
+              <textarea name="questions" placeholder={text('screeningPlaceholder')} style={textareaStyle} />
+              <button type="submit" style={primaryButtonStyle}>{text('postJob')}</button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN DASHBOARD */}
+      {isLoggedIn && currentUser?.role === 'admin' && activeTab === 'dashboard' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('adminDashboard')}</h2>
+          <div style={statsGridStyle}>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalUsers ?? 0}</p><p>{text('totalUsers')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalJobSeekers ?? 0}</p><p>{text('totalJobSeekers')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalEmployers ?? 0}</p><p>{text('totalEmployers')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalJobs ?? 0}</p><p>{text('totalJobs')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalApplications ?? 0}</p><p>{text('totalApplications')}</p></div>
+            <div style={statCardStyle}><p style={statNumberStyle}>{adminStats?.totalCertificates ?? 0}</p><p>{text('totalCertificates')}</p></div>
+          </div>
+        </div>
+      )}
+
+      {/* ADMIN USERS */}
+      {isLoggedIn && currentUser?.role === 'admin' && activeTab === 'users' && (
+        <div style={contentContainerStyle}>
+          <h2>{text('users')}</h2>
+          {adminUsers.map((u) => (
+            <div key={u._id} style={cardStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                <div>
+                  <h3 style={{ margin: '0 0 4px' }}>{u.name}</h3>
+                  <p style={{ margin: '0 0 4px', color: '#64748b' }}>{u.email} — {u.role}</p>
+                  {u.isVerified && <span style={getStatusBadgeStyle('Accepted')}>✅ {text('verified')}</span>}
+                  {u.suspended && <span style={{ ...getStatusBadgeStyle('Rejected'), marginLeft: 8 }}>Suspended</span>}
+                </div>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  {u.role === 'employer' && !u.isVerified && (
+                    <button onClick={() => adminVerifyEmployer(u.email)} style={successButtonStyle}>{text('verifyEmployer')}</button>
+                  )}
+                  <button onClick={() => adminToggleSuspend(u._id, u.suspended)} style={u.suspended ? successButtonStyle : dangerButtonStyle}>
+                    {u.suspended ? text('activateUser') : text('suspendUser')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
     </div>
   );
 }
