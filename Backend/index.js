@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
   companyWebsite: String,
   isVerified: { type: Boolean, default: false },
   preferredLanguage: { type: String, default: 'en' },
+  suspended: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
@@ -64,6 +65,7 @@ const applicationSchema = new mongoose.Schema({
   resume: String,
   skills: [String],
   answers: [{ question: String, answer: String }],
+  coverLetter: String,
   status: { type: String, default: 'Pending' },
   interviewDate: String,
   interviewType: String,
@@ -115,11 +117,9 @@ const parseQuestions = (questions) =>
 
 const calculateMatchScore = (userSkills = [], requiredSkills = [], workHistory = '') => {
   if (!requiredSkills.length) return 50;
-
   const normalizedUserSkills = userSkills.map((s) => String(s).toLowerCase().trim());
   const historyText = String(workHistory || '').toLowerCase();
   const normalizedRequired = requiredSkills.map((s) => String(s).toLowerCase().trim());
-
   const matches = normalizedRequired.filter((required) => {
     const skillMatch = normalizedUserSkills.some(
       (userSkill) => userSkill.includes(required) || required.includes(userSkill)
@@ -127,7 +127,6 @@ const calculateMatchScore = (userSkills = [], requiredSkills = [], workHistory =
     const historyMatch = historyText.includes(required);
     return skillMatch || historyMatch;
   });
-
   return Math.round((matches.length / normalizedRequired.length) * 100);
 };
 
@@ -135,33 +134,18 @@ async function seedModules() {
   const count = await TrainingModule.countDocuments();
   if (count === 0) {
     await TrainingModule.insertMany([
-      {
-        title: 'English Communication for Remote Work',
-        description: 'Improve English speaking, writing, and client communication.',
-        duration: '2 hours'
-      },
-      {
-        title: 'Virtual Assistant 101',
-        description: 'Learn scheduling, inbox handling, and remote office tools.',
-        duration: '1.5 hours'
-      },
-      {
-        title: 'Basic Digital Skills for Freelancing',
-        description: 'Build practical digital work skills for remote jobs.',
-        duration: '2 hours'
-      }
+      { title: 'English Communication for Remote Work', description: 'Improve English speaking, writing, and client communication.', duration: '2 hours' },
+      { title: 'Virtual Assistant 101', description: 'Learn scheduling, inbox handling, and remote office tools.', duration: '1.5 hours' },
+      { title: 'Basic Digital Skills for Freelancing', description: 'Build practical digital work skills for remote jobs.', duration: '2 hours' }
     ]);
   }
 }
 
 async function createNotification(userEmail, title, message, type = 'info') {
-  await Notification.create({
-    userEmail: String(userEmail).toLowerCase(),
-    title,
-    message,
-    type
-  });
+  await Notification.create({ userEmail: String(userEmail).toLowerCase(), title, message, type });
 }
+
+const decodeEmail = (raw) => decodeURIComponent(String(raw || '')).toLowerCase();
 
 app.get('/', (req, res) => res.send('Backend running ✅'));
 
@@ -172,20 +156,15 @@ app.post('/api/signup', upload.fields([{ name: 'resume' }, { name: 'photo' }]), 
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
 
-    if (!role || !name || !email || !password) {
+    if (!role || !name || !email || !password)
       return res.status(400).json({ error: 'Missing fields' });
-    }
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ error: 'Email already exists' });
 
     const hashed = await bcrypt.hash(password, 10);
-
     const user = new User({
-      role,
-      name,
-      email,
-      password: hashed,
+      role, name, email, password: hashed,
       phone: String(req.body.phone || ''),
       skills: role === 'jobSeeker' ? parseSkills(req.body.skills) : [],
       workHistory: String(req.body.workHistory || ''),
@@ -213,9 +192,10 @@ app.post('/api/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ error: 'Invalid email or password' });
 
+    if (user.suspended) return res.status(403).json({ error: 'Your account has been suspended.' });
+
     const storedPassword = typeof user.password === 'string' ? user.password : '';
     let match = false;
-
     if (storedPassword.startsWith('$2')) {
       match = await bcrypt.compare(password, storedPassword);
     } else {
@@ -248,7 +228,7 @@ app.post('/api/login', async (req, res) => {
 
 app.put('/api/profile/:email', upload.fields([{ name: 'resume' }, { name: 'photo' }]), async (req, res) => {
   try {
-    const email = req.params.email.toLowerCase();
+    const email = decodeEmail(req.params.email);
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
@@ -263,19 +243,12 @@ app.put('/api/profile/:email', upload.fields([{ name: 'resume' }, { name: 'photo
       updates.workHistory = req.body.workHistory ?? user.workHistory;
       if (req.files?.resume?.[0]?.filename) updates.resume = req.files.resume[0].filename;
     }
-
     if (user.role === 'employer') {
       updates.companyWebsite = req.body.companyWebsite ?? user.companyWebsite;
     }
-
     if (req.files?.photo?.[0]?.filename) updates.photo = req.files.photo[0].filename;
 
-    const updatedUser = await User.findOneAndUpdate(
-      { email },
-      updates,
-      { returnDocument: 'after' }
-    ).select('-password');
-
+    const updatedUser = await User.findOneAndUpdate({ email }, updates, { returnDocument: 'after' }).select('-password');
     res.json(updatedUser);
   } catch (err) {
     console.error('PROFILE UPDATE ERROR:', err);
@@ -283,16 +256,27 @@ app.put('/api/profile/:email', upload.fields([{ name: 'resume' }, { name: 'photo
   }
 });
 
+app.put('/api/employers/:email/request-verify', async (req, res) => {
+  try {
+    const email = decodeEmail(req.params.email);
+    await createNotification('admin@somtalent.com', 'Verification Request', `Employer ${email} has requested verification.`, 'info');
+    res.json({ message: 'Verification request sent' });
+  } catch (err) {
+    console.error('REQUEST VERIFY ERROR:', err);
+    res.status(500).json({ error: 'Failed to send request' });
+  }
+});
+
 app.put('/api/employers/:email/verify', async (req, res) => {
   try {
+    const email = decodeEmail(req.params.email);
     const updated = await User.findOneAndUpdate(
-      { email: req.params.email.toLowerCase(), role: 'employer' },
+      { email, role: 'employer' },
       { isVerified: true },
       { returnDocument: 'after' }
     ).select('-password');
 
     if (!updated) return res.status(404).json({ error: 'Employer not found' });
-
     await createNotification(updated.email, 'Verification', 'Your employer account has been verified.', 'success');
     res.json({ employer: updated });
   } catch (err) {
@@ -315,7 +299,6 @@ app.post('/api/jobs', async (req, res) => {
       employerEmail: String(req.body.employerEmail || '').toLowerCase(),
       questions: parseQuestions(req.body.questions)
     });
-
     await job.save();
     res.json({ message: 'Job posted' });
   } catch (err) {
@@ -340,24 +323,18 @@ app.get('/api/jobs', async (req, res) => {
         return title.includes(q) || company.includes(q) || cat.includes(q) || desc.includes(q) || skills.includes(q);
       });
     }
-
     if (skill) {
       const q = String(skill).toLowerCase().trim();
-      jobs = jobs.filter((job) =>
-        (job.requiredSkills || []).some((s) => String(s).toLowerCase().includes(q))
-      );
+      jobs = jobs.filter((job) => (job.requiredSkills || []).some((s) => String(s).toLowerCase().includes(q)));
     }
-
     if (category) {
       const q = String(category).toLowerCase().trim();
       jobs = jobs.filter((job) => String(job.category || '').toLowerCase().includes(q));
     }
-
     if (locationType) {
       const q = String(locationType).toLowerCase().trim();
       jobs = jobs.filter((job) => String(job.locationType || '').toLowerCase() === q);
     }
-
     if (salaryMin) {
       jobs = jobs.filter((job) => Number(job.salaryMax || 0) >= Number(salaryMin));
     }
@@ -367,9 +344,7 @@ app.get('/api/jobs', async (req, res) => {
 
     const jobsWithMatch = jobs.map((job) => ({
       ...job.toObject(),
-      matchScore: user
-        ? calculateMatchScore(user.skills || [], job.requiredSkills || [], user.workHistory || '')
-        : 0
+      matchScore: user ? calculateMatchScore(user.skills || [], job.requiredSkills || [], user.workHistory || '') : 0
     }));
 
     res.json(jobsWithMatch);
@@ -381,7 +356,7 @@ app.get('/api/jobs', async (req, res) => {
 
 app.post('/api/apply', async (req, res) => {
   try {
-    const { jobId, applicantEmail, answers } = req.body;
+    const { jobId, applicantEmail, answers, coverLetter } = req.body;
     const user = await User.findOne({ email: String(applicantEmail).toLowerCase() });
     if (!user) return res.status(404).json({ error: 'Applicant not found' });
 
@@ -400,12 +375,12 @@ app.post('/api/apply', async (req, res) => {
       resume: user.resume || '',
       skills: user.skills || [],
       answers: Array.isArray(answers) ? answers : [],
+      coverLetter: coverLetter || '',
       status: 'Pending'
     });
 
     await createNotification(user.email, 'Application Submitted', `You applied for ${job.title}.`, 'success');
     await createNotification(job.employerEmail, 'New Applicant', `${user.name} applied for ${job.title}.`, 'info');
-
     res.json({ message: 'Applied successfully', application });
   } catch (err) {
     console.error('APPLY ERROR:', err);
@@ -426,9 +401,8 @@ app.get('/api/my-applications', async (req, res) => {
 
 app.get('/api/applications/employer/:email', async (req, res) => {
   try {
-    const apps = await Application.find({
-      employerEmail: String(req.params.email || '').toLowerCase()
-    }).sort({ appliedAt: -1 });
+    const email = decodeEmail(req.params.email);
+    const apps = await Application.find({ employerEmail: email }).sort({ appliedAt: -1 });
     res.json(apps);
   } catch (err) {
     console.error('EMPLOYER APPLICATIONS ERROR:', err);
@@ -449,32 +423,16 @@ app.put('/api/applications/:id', async (req, res) => {
     if (req.body.interviewLocation) updates.interviewLocation = req.body.interviewLocation;
     if (req.body.interviewNotes) updates.interviewNotes = req.body.interviewNotes;
 
-    const updated = await Application.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { returnDocument: 'after' }
-    );
+    const updated = await Application.findByIdAndUpdate(req.params.id, updates, { returnDocument: 'after' });
 
     if (updates.status) {
-      await createNotification(
-        existing.email,
-        'Application Update',
-        `Your application for ${existing.jobTitle} is now ${updates.status}.`,
-        'info'
-      );
+      await createNotification(existing.email, 'Application Update', `Your application for ${existing.jobTitle} is now ${updates.status}.`, 'info');
     }
-
     if (updates.interviewDate) {
       const meetingInfo = updates.interviewType === 'online'
         ? `Meeting link: ${updates.interviewLink || 'Not provided'}`
         : `Location: ${updates.interviewLocation || 'Not provided'}`;
-
-      await createNotification(
-        existing.email,
-        'Interview Scheduled',
-        `Your interview for ${existing.jobTitle} is scheduled for ${updates.interviewDate}. ${meetingInfo}`,
-        'success'
-      );
+      await createNotification(existing.email, 'Interview Scheduled', `Your interview for ${existing.jobTitle} is scheduled for ${updates.interviewDate}. ${meetingInfo}`, 'success');
     }
 
     res.json({ message: 'Application updated', application: updated });
@@ -496,9 +454,8 @@ app.get('/api/training-modules', async (req, res) => {
 
 app.get('/api/training-progress/:email', async (req, res) => {
   try {
-    const progress = await TrainingProgress.find({
-      userEmail: String(req.params.email || '').toLowerCase()
-    });
+    const email = decodeEmail(req.params.email);
+    const progress = await TrainingProgress.find({ userEmail: email });
     res.json(progress);
   } catch (err) {
     console.error('TRAINING PROGRESS ERROR:', err);
@@ -518,21 +475,12 @@ app.post('/api/training-progress/complete', async (req, res) => {
       existing.completedAt = new Date();
       await existing.save();
     } else {
-      await TrainingProgress.create({
-        userEmail: email,
-        moduleId,
-        completed: true,
-        completedAt: new Date()
-      });
+      await TrainingProgress.create({ userEmail: email, moduleId, completed: true, completedAt: new Date() });
     }
 
     const certificateExists = await Certificate.findOne({ userEmail: email, moduleId });
     if (!certificateExists && module) {
-      await Certificate.create({
-        userEmail: email,
-        moduleId,
-        moduleTitle: module.title
-      });
+      await Certificate.create({ userEmail: email, moduleId, moduleTitle: module.title });
     }
 
     if (module) {
@@ -548,7 +496,8 @@ app.post('/api/training-progress/complete', async (req, res) => {
 
 app.get('/api/certificates/:email', async (req, res) => {
   try {
-    const certificates = await Certificate.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ issuedAt: -1 });
+    const email = decodeEmail(req.params.email);
+    const certificates = await Certificate.find({ userEmail: email }).sort({ issuedAt: -1 });
     res.json(certificates);
   } catch (err) {
     console.error('CERTIFICATES ERROR:', err);
@@ -558,7 +507,8 @@ app.get('/api/certificates/:email', async (req, res) => {
 
 app.get('/api/notifications/:email', async (req, res) => {
   try {
-    const notifications = await Notification.find({ userEmail: String(req.params.email).toLowerCase() }).sort({ createdAt: -1 });
+    const email = decodeEmail(req.params.email);
+    const notifications = await Notification.find({ userEmail: email }).sort({ createdAt: -1 });
     res.json(notifications);
   } catch (err) {
     console.error('NOTIFICATIONS ERROR:', err);
@@ -568,11 +518,7 @@ app.get('/api/notifications/:email', async (req, res) => {
 
 app.put('/api/notifications/read/:id', async (req, res) => {
   try {
-    const updated = await Notification.findByIdAndUpdate(
-      req.params.id,
-      { isRead: true },
-      { returnDocument: 'after' }
-    );
+    const updated = await Notification.findByIdAndUpdate(req.params.id, { isRead: true }, { returnDocument: 'after' });
     res.json(updated);
   } catch (err) {
     console.error('MARK READ ERROR:', err);
@@ -582,13 +528,12 @@ app.put('/api/notifications/read/:id', async (req, res) => {
 
 app.get('/api/dashboard/jobseeker/:email', async (req, res) => {
   try {
-    const email = String(req.params.email || '').toLowerCase();
+    const email = decodeEmail(req.params.email);
     const totalApplications = await Application.countDocuments({ email });
     const accepted = await Application.countDocuments({ email, status: 'Accepted' });
     const pending = await Application.countDocuments({ email, status: 'Pending' });
     const completedCourses = await TrainingProgress.countDocuments({ userEmail: email, completed: true });
     const certificates = await Certificate.countDocuments({ userEmail: email });
-
     res.json({ totalApplications, accepted, pending, completedCourses, certificates });
   } catch (err) {
     console.error('JOB SEEKER DASHBOARD ERROR:', err);
@@ -598,12 +543,11 @@ app.get('/api/dashboard/jobseeker/:email', async (req, res) => {
 
 app.get('/api/dashboard/employer/:email', async (req, res) => {
   try {
-    const email = String(req.params.email || '').toLowerCase();
+    const email = decodeEmail(req.params.email);
     const totalJobs = await Job.countDocuments({ employerEmail: email });
     const totalApplications = await Application.countDocuments({ employerEmail: email });
     const shortlisted = await Application.countDocuments({ employerEmail: email, status: 'Shortlisted' });
     const interviews = await Application.countDocuments({ employerEmail: email, status: 'Interview Scheduled' });
-
     res.json({ totalJobs, totalApplications, shortlisted, interviews });
   } catch (err) {
     console.error('EMPLOYER DASHBOARD ERROR:', err);
@@ -619,15 +563,7 @@ app.get('/api/dashboard/admin', async (req, res) => {
     const totalJobs = await Job.countDocuments();
     const totalApplications = await Application.countDocuments();
     const totalCertificates = await Certificate.countDocuments();
-
-    res.json({
-      totalUsers,
-      totalJobSeekers,
-      totalEmployers,
-      totalJobs,
-      totalApplications,
-      totalCertificates
-    });
+    res.json({ totalUsers, totalJobSeekers, totalEmployers, totalJobs, totalApplications, totalCertificates });
   } catch (err) {
     console.error('ADMIN DASHBOARD ERROR:', err);
     res.status(500).json({ error: 'Failed to fetch admin dashboard' });
@@ -644,6 +580,21 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
+app.put('/api/admin/users/:id/suspend', async (req, res) => {
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      { suspended: req.body.suspended },
+      { returnDocument: 'after' }
+    ).select('-password');
+    if (!updated) return res.status(404).json({ error: 'User not found' });
+    res.json(updated);
+  } catch (err) {
+    console.error('SUSPEND USER ERROR:', err);
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('MongoDB connected');
@@ -653,12 +604,9 @@ mongoose.connect(process.env.MONGODB_URI)
     if (!adminExists) {
       const hashed = await bcrypt.hash('admin123', 10);
       await User.create({
-        role: 'admin',
-        name: 'System Admin',
-        email: 'admin@somtalent.com',
-        password: hashed,
-        isVerified: true,
-        preferredLanguage: 'en'
+        role: 'admin', name: 'System Admin',
+        email: 'admin@somtalent.com', password: hashed,
+        isVerified: true, preferredLanguage: 'en'
       });
     }
 

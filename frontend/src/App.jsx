@@ -120,7 +120,6 @@ const translations = {
     languageToggle: 'EN / SO'
   },
   so: {
-    // Your exact Somali translations (unchanged)
     appName: 'SomTalent',
     tagline: 'Xiriirinta xirfadlayaasha Somaliland shaqooyinka fog ee adduunka',
     joinLogin: 'Biir / Gal',
@@ -238,7 +237,6 @@ const translations = {
   }
 };
 
-// ──────── ADDED THESE VALIDATION FUNCTIONS (fixes ReferenceError) ────────
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const validatePassword = (pw) => pw.length >= 6;
 const validatePhone = (ph) => !ph || /^[+\d\s\-()]{6,20}$/.test(ph);
@@ -374,14 +372,14 @@ function App() {
 
   const loadApplications = async () => {
     try {
-      const data = await fetchJSON(`${API}/api/my-applications?email=${currentUser.email}`);
+      const data = await fetchJSON(`${API}/api/my-applications?email=${encodeURIComponent(currentUser.email)}`);
       setApplications(Array.isArray(data) ? data : []);
     } catch { setApplications([]); }
   };
 
   const loadEmployerApplications = async () => {
     try {
-      const data = await fetchJSON(`${API}/api/applications/employer/${currentUser.email}`);
+      const data = await fetchJSON(`${API}/api/applications/employer/${encodeURIComponent(currentUser.email)}`);
       setEmployerApplications(Array.isArray(data) ? data : []);
     } catch { setEmployerApplications([]); }
   };
@@ -395,21 +393,21 @@ function App() {
 
   const loadProgress = async () => {
     try {
-      const data = await fetchJSON(`${API}/api/training-progress/${currentUser.email}`);
+      const data = await fetchJSON(`${API}/api/training-progress/${encodeURIComponent(currentUser.email)}`);
       setProgress(Array.isArray(data) ? data : []);
     } catch { setProgress([]); }
   };
 
   const loadCertificates = async () => {
     try {
-      const data = await fetchJSON(`${API}/api/certificates/${currentUser.email}`);
+      const data = await fetchJSON(`${API}/api/certificates/${encodeURIComponent(currentUser.email)}`);
       setCertificates(Array.isArray(data) ? data : []);
     } catch { setCertificates([]); }
   };
 
   const loadNotifications = async () => {
     try {
-      const data = await fetchJSON(`${API}/api/notifications/${currentUser.email}`);
+      const data = await fetchJSON(`${API}/api/notifications/${encodeURIComponent(currentUser.email)}`);
       setNotifications(Array.isArray(data) ? data : []);
     } catch { setNotifications([]); }
   };
@@ -417,8 +415,8 @@ function App() {
   const loadDashboard = async () => {
     try {
       const url = currentUser.role === 'employer'
-        ? `${API}/api/dashboard/employer/${currentUser.email}`
-        : `${API}/api/dashboard/jobseeker/${currentUser.email}`;
+        ? `${API}/api/dashboard/employer/${encodeURIComponent(currentUser.email)}`
+        : `${API}/api/dashboard/jobseeker/${encodeURIComponent(currentUser.email)}`;
       const data = await fetchJSON(url);
       setDashboardData(data);
     } catch { setDashboardData(null); }
@@ -674,7 +672,7 @@ function App() {
       if (currentUser.role === 'employer') {
         formData.append('companyWebsite', profileForm.companyWebsite);
       }
-      const updatedUser = await fetchJSON(`${API}/api/profile/${currentUser.email}`, {
+      const updatedUser = await fetchJSON(`${API}/api/profile/${encodeURIComponent(currentUser.email)}`, {
         method: 'PUT',
         body: formData
       });
@@ -689,7 +687,7 @@ function App() {
 
   const requestVerification = async () => {
     try {
-      await fetchJSON(`${API}/api/employers/${currentUser.email}/request-verify`, { method: 'PUT' });
+      await fetchJSON(`${API}/api/employers/${encodeURIComponent(currentUser.email)}/request-verify`, { method: 'PUT' });
       alert('Verification request sent to admin.');
       loadNotifications();
     } catch (error) {
@@ -699,7 +697,7 @@ function App() {
 
   const adminVerifyEmployer = async (email) => {
     try {
-      await fetchJSON(`${API}/api/employers/${email}/verify`, { method: 'PUT' });
+      await fetchJSON(`${API}/api/employers/${encodeURIComponent(email)}/verify`, { method: 'PUT' });
       loadAdminUsers();
     } catch (error) {
       alert(error.message);
@@ -792,7 +790,6 @@ function App() {
 
   return (
     <div style={pageStyle}>
-      {/* Your full JSX is here exactly as you had it */}
       <header style={headerStyle}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
           <button
