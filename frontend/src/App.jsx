@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 // --- Configuration ---
-const API = 'http://localhost:5000'; // Replace with your actual backend URL
+const API = import.meta.env.VITE_API_URL || 'https://somtalent-platform.onrender.com';
 
 const translations = {
   en: {
