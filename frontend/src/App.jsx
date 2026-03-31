@@ -238,7 +238,7 @@ const translations = {
   }
 };
 
-// ──────── ADDED THESE 3 VALIDATION FUNCTIONS (fixes ReferenceError) ────────
+// ──────── ADDED THESE VALIDATION FUNCTIONS (fixes ReferenceError) ────────
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const validatePassword = (pw) => pw.length >= 6;
 const validatePhone = (ph) => !ph || /^[+\d\s\-()]{6,20}$/.test(ph);
@@ -792,6 +792,7 @@ function App() {
 
   return (
     <div style={pageStyle}>
+      {/* Your full JSX is here exactly as you had it */}
       <header style={headerStyle}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
           <button
@@ -870,8 +871,6 @@ function App() {
           </div>
         </div>
       )}
-
-      {/* All your other sections (dashboards, browse jobs, training, applications, certificates, employer, notifications, help, profile, modals, etc.) are exactly as you sent them */}
 
     </div>
   );
