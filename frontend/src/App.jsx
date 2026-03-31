@@ -1,710 +1,364 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
-// --- Configuration ---
-const API = import.meta.env.VITE_API_URL || 'https://somtalent-platform.onrender.com';
+const API = 'https://somtalent-platform.onrender.com/api';
 
-const translations = {
-  en: {
-    appName: "Somali Job Portal",
-    tagline: "Connecting Somali Talent with Opportunity",
-    welcome: "Welcome",
-    logout: "Log Out",
-    joinLogin: "Join / Login",
-    createAccount: "Create Account",
-    asJobSeeker: "As Job Seeker",
-    asEmployer: "As Employer",
-    asAdmin: "As Admin",
-    fullName: "Full Name",
-    companyName: "Company Name",
-    email: "Email",
-    phone: "Phone Number",
-    password: "Password",
-    skills: "Skills (comma separated)",
-    workHistory: "Work History",
-    resume: "Upload Resume (PDF/Doc)",
-    companyWebsite: "Company Website",
-    english: "English",
-    somali: "Soomaali",
-    signUp: "Sign Up",
-    login: "Log In",
-    jobSeekerDashboard: "Job Seeker Dashboard",
-    employerDashboard: "Employer Dashboard",
-    adminDashboard: "Admin Dashboard",
-    browseJobs: "Browse Jobs",
-    training: "Training",
-    applications: "My Applications",
-    certificates: "Certificates",
-    notifications: "Notifications",
-    help: "Help / Support",
-    profile: "My Profile",
-    postJob: "Post a Job",
-    users: "Manage Users",
-    totalApplications: "Total Applications",
-    accepted: "Accepted",
-    pending: "Pending",
-    completedCourses: "Completed Courses",
-    certificatesCount: "Certificates",
-    totalJobs: "Total Jobs",
-    shortlisted: "Shortlisted",
-    interviews: "Interviews",
-    totalUsers: "Total Users",
-    totalJobSeekers: "Job Seekers",
-    totalEmployers: "Employers",
-    totalCertificates: "Total Certificates",
-    verified: "Verified",
-    pendingVerification: "Pending Verification",
-    verifyEmployer: "Verify Employer",
-    activateUser: "Activate",
-    suspendUser: "Suspend",
-    filters: "Filters",
-    keywordPlaceholder: "Search by title...",
-    skill: "Skill",
-    category: "Category",
-    allLocations: "All Locations",
-    remote: "Remote",
-    onsite: "On-site",
-    hybrid: "Hybrid",
-    minimumSalary: "Min Salary",
-    applyFilters: "Apply Filters",
-    noJobs: "No jobs found.",
-    matchScore: "Match Score",
-    alreadyApplied: "Already Applied",
-    status: "Status",
-    answerQuestion: "Your answer...",
-    coverLetter: "Cover Letter",
-    apply: "Apply Now",
-    noModules: "No training modules available.",
-    completed: "Completed",
-    completeModule: "Mark as Complete",
-    noApplications: "You haven't applied to any jobs yet.",
-    applied: "Applied on",
-    interviewDate: "Interview Date",
-    interviewType: "Type",
-    meetingLink: "Meeting Link",
-    meetingLocation: "Location",
-    interviewNotes: "Notes",
-    noCertificates: "No certificates earned yet.",
-    issuedAt: "Issued at",
-    title: "Job Title",
-    minSalary: "Min Salary",
-    maxSalary: "Max Salary",
-    requiredSkills: "Required Skills",
-    saveSuccess: "Profile updated successfully.",
-  },
-  so: {
-    appName: "Bogga Shaqada Soomaaliya",
-    tagline: "Isku xirka hibooyinka Soomaaliyeed iyo fursadaha",
-    welcome: "Ku soo dhawaaw",
-    logout: "Ka bax",
-    joinLogin: "Ku biir / Soo gal",
-    createAccount: "Abuur Akoon",
-    asJobSeeker: "Shaqo doon ahaan",
-    asEmployer: "Shaqo bixiye ahaan",
-    asAdmin: "Maamule ahaan",
-    fullName: "Magaca oo buuxa",
-    companyName: "Magaca Shirkadda",
-    email: "Iimayl",
-    phone: "Lambarka Taleefanka",
-    password: "Ereyga sirta ah",
-    skills: "Xirfadaha (ku kala saar kooma)",
-    workHistory: "Khibradda shaqada",
-    resume: "Soo geli CV-ga",
-    companyWebsite: "Websaytka Shirkadda",
-    english: "Ingiriis",
-    somali: "Soomaali",
-    signUp: "Isku diiwaangeli",
-    login: "Soo gal",
-    jobSeekerDashboard: "Dashboard-ka Shaqo doonka",
-    employerDashboard: "Dashboard-ka Shaqo bixiyaha",
-    adminDashboard: "Dashboard-ka Maamulaha",
-    browseJobs: "Eeg Shaqooyinka",
-    training: "Tababar",
-    applications: "Codsiyadeeyda",
-    certificates: "Shahaadooyinka",
-    notifications: "Ogeysiisyada",
-    help: "Caawinaad",
-    profile: "Profile-kayga",
-    postJob: "Geli Shaqo",
-    users: "Maaree Isticmaalayaasha",
-    totalApplications: "Wadarta Codsiyada",
-    accepted: "La aqbalay",
-    pending: "Wali socda",
-    completedCourses: "Koorsooyinka dhammaaday",
-    certificatesCount: "Shahaadooyin",
-    totalJobs: "Wadarta Shaqooyinka",
-    shortlisted: "Liiska gaaban",
-    interviews: "Wareysiyo",
-    totalUsers: "Wadarta Isticmaalayaasha",
-    totalJobSeekers: "Shaqo doonayaal",
-    totalEmployers: "Shaqo bixiyayaal",
-    totalCertificates: "Wadarta Shahaadooyinka",
-    verified: "La xaqiijiyay",
-    pendingVerification: "Xaqiijin sugaya",
-    verifyEmployer: "Xaqiiji Shaqo bixiyaha",
-    activateUser: "Dhaqaaji",
-    suspendUser: "Xanib",
-    filters: "Miirayaasha",
-    keywordPlaceholder: "Ku raadi magac...",
-    skill: "Xirfad",
-    category: "Nooca",
-    allLocations: "Meel kasta",
-    remote: "Fogaan",
-    onsite: "Xafiiska",
-    hybrid: "Isku dhaf",
-    minimumSalary: "Mushaharka ugu hooseeya",
-    applyFilters: "Isticmaal Miirayaasha",
-    noJobs: "Wax shaqo ah lama helin.",
-    matchScore: "Heerka isku xirka",
-    alreadyApplied: "Horey ayaad u codsatay",
-    status: "Heerka",
-    answerQuestion: "Jawaabtaada...",
-    coverLetter: "Warqadda Codsiga",
-    apply: "Codso Hadda",
-    noModules: "Ma jiraan cutubyo tababar.",
-    completed: "Wuu dhammaaday",
-    completeModule: "Calaamadee inuu dhammaaday",
-    noApplications: "Wali ma aadan codsan shaqo.",
-    applied: "La codsaday",
-    interviewDate: "Taariikhda Wareysiga",
-    interviewType: "Nooca",
-    meetingLink: "Xiriirka kulanka",
-    meetingLocation: "Goobta",
-    interviewNotes: "Xusuusin",
-    noCertificates: "Wali wax shahaado ah ma helin.",
-    issuedAt: "La soo saaray",
-    title: "Cinwaanka Shaqada",
-    minSalary: "Mushaharka ugu hooseeya",
-    maxSalary: "Mushaharka ugu sarreeya",
-    requiredSkills: "Xirfadaha loo baahan yahay",
-    saveSuccess: "Profile-ka si guul leh ayaa loo cusbooneysiiyay.",
-  }
-};
-
-// --- Utilities ---
-const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const validatePassword = (pass) => pass.length >= 6;
-const validatePhone = (phone) => /^\+?[0-9]{7,15}$/.test(phone);
-
-const fetchJSON = async (url, options = {}) => {
-  const response = await fetch(url, options);
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'API Error');
-  }
-  return response.json();
-};
-
-const App = () => {
-  // --- States ---
-  const [lang, setLang] = useState('en');
+function App() {
+  const [activeTab, setActiveTab] = useState('join');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('join');
 
-  // Forms
-  const [signupRole, setSignupRole] = useState('jobSeeker');
-  const [signupData, setSignupData] = useState({ name: '', email: '', phone: '', password: '', skills: '', workHistory: '', companyWebsite: '', preferredLanguage: 'en' });
-  const [signupResume, setSignupResume] = useState(null);
-  const [signupValidationErrors, setSignupValidationErrors] = useState({});
-  const [signupLoading, setSignupLoading] = useState(false);
+  // Signup
+  const [role, setRole] = useState('jobSeeker');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [skills, setSkills] = useState('');
+  const [resume, setResume] = useState(null);
+  const [resumeName, setResumeName] = useState('');
   const [signupMessage, setSignupMessage] = useState('');
   const [signupError, setSignupError] = useState('');
+  const [signupLoading, setSignupLoading] = useState(false);
 
-  const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [loginValidationErrors, setLoginValidationErrors] = useState({});
+  // Login
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-
-  const [profileForm, setProfileForm] = useState({});
-  const [profileResume, setProfileResume] = useState(null);
-  const [profileMessage, setProfileMessage] = useState('');
-  const [profileError, setProfileError] = useState('');
 
   // Data
   const [jobs, setJobs] = useState([]);
-  const [filters, setFilters] = useState({ keyword: '', skill: '', category: '', locationType: '', salaryMin: '' });
   const [applications, setApplications] = useState([]);
-  const [employerApplications, setEmployerApplications] = useState([]);
-  const [modules, setModules] = useState([]);
-  const [progress, setProgress] = useState([]);
-  const [certificates, setCertificates] = useState([]);
-  const [notifications, setNotifications] = useState([]);
-  const [dashboardData, setDashboardData] = useState(null);
-  const [adminStats, setAdminStats] = useState(null);
-  const [adminUsers, setAdminUsers] = useState([]);
-
-  // Interactions
-  const [questionAnswers, setQuestionAnswers] = useState({});
-  const [coverLetters, setCoverLetters] = useState({});
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [applyMessage, setApplyMessage] = useState('');
-  
-  // Interview fields
-  const [interviewDates, setInterviewDates] = useState({});
-  const [interviewTypes, setInterviewTypes] = useState({});
-  const [interviewLinks, setInterviewLinks] = useState({});
-  const [interviewLocations, setInterviewLocations] = useState({});
-  const [interviewNotes, setInterviewNotes] = useState({});
+  const [employerApplications, setEmployerApplications] = useState([]);
 
-  const text = (key, fallback) => translations[lang][key] || fallback;
-  const completedModuleIds = useMemo(() => new Set(progress.map(p => p.moduleId)), [progress]);
-
-  // --- Effects ---
-  useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      const user = JSON.parse(savedUser);
-      setCurrentUser(user);
-      setIsLoggedIn(true);
-      setLang(user.preferredLanguage || 'en');
-      setActiveTab('dashboard');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn && currentUser) {
-      loadDashboard();
-      loadNotifications();
-      if (currentUser.role === 'jobSeeker') {
-        loadJobs();
-        loadApplications();
-        loadModules();
-        loadProgress();
-        loadCertificates();
-      } else if (currentUser.role === 'employer') {
-        loadEmployerApplications();
-      } else if (currentUser.role === 'admin') {
-        loadAdminDashboard();
-        loadAdminUsers();
-      }
-    }
-  }, [isLoggedIn, currentUser]);
-
-  // --- Data Loading Functions ---
-  const loadJobs = async () => {
-    try {
-      const query = new URLSearchParams({ ...filters, userEmail: currentUser?.email || '' }).toString();
-      const data = await fetchJSON(`${API}/jobs?${query}`);
-      setJobs(Array.isArray(data) ? data : []);
-    } catch { setJobs([]); }
-  };
-
-  const loadApplications = async () => {
-    try {
-      const data = await fetchJSON(`${API}/applications/user/${currentUser.email}`);
-      setApplications(Array.isArray(data) ? data : []);
-    } catch { setApplications([]); }
-  };
-
-  const loadEmployerApplications = async () => {
-    try {
-      const data = await fetchJSON(`${API}/applications/employer/${currentUser.email}`);
-      setEmployerApplications(Array.isArray(data) ? data : []);
-    } catch { setEmployerApplications([]); }
-  };
-
-  const loadModules = async () => {
-    try {
-      const data = await fetchJSON(`${API}/training-modules`);
-      setModules(Array.isArray(data) ? data : []);
-    } catch { setModules([]); }
-  };
-
-  const loadProgress = async () => {
-    try {
-      const data = await fetchJSON(`${API}/training-progress/${currentUser.email}`);
-      setProgress(Array.isArray(data) ? data : []);
-    } catch { setProgress([]); }
-  };
-
-  const loadCertificates = async () => {
-    try {
-      const data = await fetchJSON(`${API}/certificates/${currentUser.email}`);
-      setCertificates(Array.isArray(data) ? data : []);
-    } catch { setCertificates([]); }
-  };
-
-  const loadNotifications = async () => {
-    try {
-      const data = await fetchJSON(`${API}/notifications/${currentUser.email}`);
-      setNotifications(Array.isArray(data) ? data : []);
-    } catch { setNotifications([]); }
-  };
-
-  const loadDashboard = async () => {
-    try {
-      if (!currentUser) return;
-      const url = currentUser.role === 'employer'
-        ? `${API}/dashboard/employer/${currentUser.email}`
-        : `${API}/dashboard/jobseeker/${currentUser.email}`;
-      const data = await fetchJSON(url);
-      setDashboardData(data);
-    } catch { setDashboardData(null); }
-  };
-
-  const loadAdminDashboard = async () => {
-    try {
-      const data = await fetchJSON(`${API}/dashboard/admin`);
-      setAdminStats(data);
-    } catch { setAdminStats(null); }
-  };
-
-  const loadAdminUsers = async () => {
-    try {
-      const data = await fetchJSON(`${API}/admin/users`);
-      setAdminUsers(Array.isArray(data) ? data : []);
-    } catch { setAdminUsers([]); }
-  };
-
-  // --- Form Handlers ---
-  const handleSignupChange = (e) => {
-    const { name, value } = e.target;
-    setSignupData((prev) => ({ ...prev, [name]: value }));
-    setSignupValidationErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
-    setLoginValidationErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const handleProfileChange = (e) => {
-    const { name, value } = e.target;
-    setProfileForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const validateSignup = () => {
-    const errors = {};
-    if (!signupData.name.trim()) errors.name = 'Name is required.';
-    if (!validateEmail(signupData.email)) errors.email = 'Enter a valid email address.';
-    if (!validatePassword(signupData.password)) errors.password = 'Min 6 characters.';
-    if (signupRole === 'jobSeeker' && !signupResume) errors.resume = 'Please upload resume.';
-    return errors;
-  };
+  // Training
+  const [trainingModules, setTrainingModules] = useState([]);
+  const [completedModules, setCompletedModules] = useState([]);
+  const [showTrainingModal, setShowTrainingModal] = useState(false);
+  const [currentModule, setCurrentModule] = useState(null);
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    const errors = validateSignup();
-    if (Object.keys(errors).length > 0) { setSignupValidationErrors(errors); return; }
+    if (role === 'jobSeeker' && !resume) return setSignupError('Resume is required');
+
+    const formData = new FormData();
+    formData.append('role', role);
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    if (role === 'jobSeeker') {
+      formData.append('skills', skills);
+      formData.append('resume', resume);
+    }
+
     setSignupLoading(true);
-    setSignupMessage('');
-    setSignupError('');
     try {
-      const formData = new FormData();
-      Object.keys(signupData).forEach(key => formData.append(key, signupData[key]));
-      formData.append('role', signupRole);
-      if (signupResume) formData.append('resume', signupResume);
-      
-      await fetchJSON(`${API}/api/signup`, { method: 'POST', body: formData });
-      setSignupMessage('Success! Please log in.');
-      setSignupData({ name: '', email: '', phone: '', password: '', skills: '', workHistory: '', companyWebsite: '', preferredLanguage: 'en' });
-      setSignupResume(null);
-    } catch (error) { setSignupError(error.message); } 
-    finally { setSignupLoading(false); }
+      const res = await fetch(`${API}/signup`, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setSignupMessage('Signed up successfully! Login now.');
+        setName(''); setEmail(''); setPassword(''); setSkills(''); setResume(null); setResumeName('');
+      } else setSignupError(data.error);
+    } catch (err) {
+      setSignupError('Cannot connect to server');
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoginError('');
     try {
-      const data = await fetchJSON(`${API}/api/login`, {
+      const res = await fetch(`${API}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData)
+        body: JSON.stringify({ email: loginEmail, password: loginPassword })
       });
-      setCurrentUser(data.user);
-      setIsLoggedIn(true);
-      setLang(data.user.preferredLanguage || 'en');
-      localStorage.setItem('currentUser', JSON.stringify(data.user));
-      setProfileForm({ ...data.user, skills: data.user.skills?.join(', ') || '' });
-      setActiveTab('dashboard');
-    } catch (error) { setLoginError(error.message); }
+      const data = await res.json();
+      if (res.ok) {
+        setIsLoggedIn(true);
+        setCurrentUser(data.user);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        setActiveTab(data.user.role === 'jobSeeker' ? 'jobs' : 'employer');
+      } else setLoginError(data.error);
+    } catch (err) {
+      setLoginError('Cannot connect to server');
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
-    setCurrentUser(null);
     setIsLoggedIn(false);
+    setCurrentUser(null);
     setActiveTab('join');
   };
 
-  // --- Logic Handlers ---
-  const handleApply = async (job) => {
+  const handleApply = async (jobTitle) => {
+    if (!isLoggedIn) return;
     try {
-      const answersForJob = (job.questions || []).map((q, idx) => ({
-        question: q,
-        answer: questionAnswers[job._id]?.[idx] || ''
-      }));
-      if (answersForJob.some(a => !a.answer.trim())) {
-        setApplyMessage('Please answer all questions.');
-        return;
-      }
-      await fetchJSON(`${API}/apply`, {
+      const res = await fetch(`${API}/apply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jobId: job._id,
-          applicantEmail: currentUser.email,
-          answers: answersForJob,
-          coverLetter: coverLetters[job._id] || ''
-        })
+        body: JSON.stringify({ name: currentUser.name, email: currentUser.email, jobTitle })
       });
-      setApplyMessage('Application sent!');
-      loadApplications();
-    } catch (error) { setApplyMessage(error.message); }
+      if (res.ok) setApplyMessage(`Applied for "${jobTitle}"`);
+    } catch (err) {
+      setApplyMessage('Error submitting application');
+    }
   };
 
-  const handlePostJob = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
+  const loadJobs = async () => {
     try {
-      await fetchJSON(`${API}/jobs`, {
+      const res = await fetch(`${API}/jobs`);
+      const data = await res.json();
+      setJobs(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const loadMyApplications = async () => {
+    if (!currentUser?.email) return;
+    setApplicationsLoading(true);
+    try {
+      const res = await fetch(`${API}/my-applications?email=${currentUser.email}`);
+      const data = await res.json();
+      setApplications(data);
+    } catch (err) { console.error(err); } finally {
+      setApplicationsLoading(false);
+    }
+  };
+
+  const loadEmployerApplications = async () => {
+    try {
+      const res = await fetch(`${API}/applications/employer/${currentUser.email}`);
+      const data = await res.json();
+      setEmployerApplications(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const loadTrainingModules = async () => {
+    try {
+      const res = await fetch(`${API}/training-modules`);
+      const data = await res.json();
+      setTrainingModules(data);
+    } catch (err) { console.error(err); }
+  };
+
+  const startCourse = (module) => {
+    setCurrentModule(module);
+    setShowTrainingModal(true);
+  };
+
+  const markAsCompleted = async (module) => {
+    try {
+      await fetch(`${API}/training-progress/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: fd.get('title'),
-          company: currentUser.name,
-          category: fd.get('category'),
-          requiredSkills: fd.get('requiredSkills'),
-          salaryMin: fd.get('salaryMin'),
-          salaryMax: fd.get('salaryMax'),
-          locationType: fd.get('locationType'),
-          description: fd.get('description'),
-          employerEmail: currentUser.email
-        })
+        body: JSON.stringify({ userEmail: currentUser.email, moduleId: module._id })
       });
+      setCompletedModules([...completedModules, module]);
+      setShowTrainingModal(false);
+    } catch (err) { console.error(err); }
+  };
+
+  const postJob = async (e) => {
+    e.preventDefault();
+    const title = e.target.title.value;
+    const salary = e.target.salary.value;
+    try {
+      await fetch(`${API}/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, company: name || 'Your Company', salary, employerEmail: currentUser.email })
+      });
+      alert('Job posted!');
       e.target.reset();
-      loadDashboard();
-      setActiveTab('dashboard');
-    } catch (error) { alert(error.message); }
+    } catch (err) { alert('Failed to post job'); }
   };
 
-  const updateApplicationStatus = async (id, status) => {
-    try {
-      await fetchJSON(`${API}/applications/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      loadEmployerApplications();
-    } catch (error) { alert(error.message); }
-  };
-
-  const markModuleComplete = async (moduleId) => {
-    try {
-      await fetchJSON(`${API}/training-progress/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userEmail: currentUser.email, moduleId })
-      });
-      loadProgress();
-      loadCertificates();
-    } catch (error) { alert(error.message); }
-  };
-
-  const updateProfile = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      Object.keys(profileForm).forEach(k => formData.append(k, profileForm[k]));
-      if (profileResume) formData.append('resume', profileResume);
-      
-      const updatedUser = await fetchJSON(`${API}/api/profile/${currentUser.email}`, {
-        method: 'PUT',
-        body: formData
-      });
-      setCurrentUser(updatedUser);
-      setProfileMessage(text('saveSuccess', 'Profile Updated!'));
-    } catch (error) { setProfileError(error.message); }
-  };
-
-  const adminToggleSuspend = async (userId, currentStatus) => {
-    try {
-      await fetchJSON(`${API}/admin/users/${userId}/suspend`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ suspended: !currentStatus })
-      });
-      loadAdminUsers();
-    } catch (error) { alert(error.message); }
-  };
-
-  const markNotificationRead = async (id) => {
-    await fetchJSON(`${API}/notifications/read/${id}`, { method: 'PUT' });
-    loadNotifications();
-  };
-
-  // --- Render Helpers ---
-  const getStatusBadgeStyle = (status) => {
-    let bg = '#e2e8f0', color = '#1e293b';
-    if (status === 'Pending') { bg = '#fef3c7'; color = '#92400e'; }
-    else if (status === 'Accepted') { bg = '#dcfce7'; color = '#166534'; }
-    else if (status === 'Rejected') { bg = '#fee2e2'; color = '#991b1b'; }
-    else if (status === 'Interview Scheduled') { bg = '#ede9fe'; color = '#6d28d9'; }
-    return { background: bg, color, padding: '6px 12px', borderRadius: 99, fontWeight: 700, fontSize: '12px' };
-  };
-
-  const fieldError = (msg) => msg ? <p style={{ color: '#dc2626', fontSize: 11, margin: '-8px 0 8px' }}>{msg}</p> : null;
-
-  // --- Styles ---
-  const pageStyle = { fontFamily: 'sans-serif', backgroundColor: '#f8fafc', minHeight: '100vh' };
-  const headerStyle = { backgroundColor: '#1e3a8a', color: 'white', padding: '20px', textAlign: 'center' };
-  const navStyle = { display: 'flex', justifyContent: 'center', backgroundColor: 'white', padding: '10px', gap: '10px', borderBottom: '1px solid #e2e8f0' };
-  const navButtonStyle = { padding: '8px 16px', border: 'none', background: 'none', cursor: 'pointer', fontWeight: 600, color: '#475569' };
-  const cardStyle = { backgroundColor: 'white', padding: '20px', borderRadius: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '20px' };
-  const inputStyle = { width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '6px', border: '1px solid #cbd5e1' };
-  const textareaStyle = { ...inputStyle, minHeight: '80px' };
-  const primaryButtonStyle = { width: '100%', padding: '10px', backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' };
-  const smallButtonStyle = { padding: '5px 10px', backgroundColor: '#64748b', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' };
-  const statsGridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '15px' };
+  useEffect(() => {
+    if (activeTab === 'jobs' && currentUser?.role === 'jobSeeker') loadJobs();
+    if (activeTab === 'applications' && currentUser?.role === 'jobSeeker') loadMyApplications();
+    if (activeTab === 'employer' && currentUser?.role === 'employer') loadEmployerApplications();
+    if (activeTab === 'training' && currentUser?.role === 'jobSeeker') loadTrainingModules();
+  }, [activeTab, currentUser]);
 
   return (
-    <div style={pageStyle}>
-      <header style={headerStyle}>
-        <div style={{ textAlign: 'right' }}>
-           <button onClick={() => setLang(lang === 'en' ? 'so' : 'en')} style={{...smallButtonStyle, background: '#334155'}}>
-             {lang === 'en' ? 'Soomaali' : 'English'}
-           </button>
-        </div>
-        <h1>{text('appName')}</h1>
-        <p>{text('tagline')}</p>
-        {isLoggedIn && <div>{text('welcome')}, {currentUser.name} <button onClick={handleLogout} style={smallButtonStyle}>{text('logout')}</button></div>}
+    <div style={{ fontFamily: 'Arial', padding: '20px', backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+      <header style={{ background: '#1e3a8a', color: 'white', padding: '30px 20px', textAlign: 'center', borderRadius: '8px', marginBottom: '30px' }}>
+        <h1 style={{ margin: 0, fontSize: '2.8em' }}>SomTalent</h1>
+        <p style={{ margin: '10px 0 0', fontSize: '1.2em' }}>Connecting Somaliland talent to remote jobs worldwide</p>
+        {isLoggedIn && <div style={{ marginTop: '10px' }}>Welcome, {currentUser.name}! <button onClick={handleLogout} style={{ marginLeft: '15px', padding: '6px 12px', background: '#e2e8f0', border: 'none', borderRadius: '6px' }}>Logout</button></div>}
       </header>
 
-      <nav style={navStyle}>
-        {!isLoggedIn ? (
-          <button onClick={() => setActiveTab('join')} style={navButtonStyle}>{text('joinLogin')}</button>
-        ) : (
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        {!isLoggedIn && <button onClick={() => setActiveTab('join')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'join' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'join' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Join / Login</button>}
+
+        {isLoggedIn && currentUser.role === 'employer' && (
+          <button onClick={() => setActiveTab('employer')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'employer' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'employer' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Employer Dashboard</button>
+        )}
+
+        {isLoggedIn && currentUser.role === 'jobSeeker' && (
           <>
-            <button onClick={() => setActiveTab('dashboard')} style={navButtonStyle}>Dashboard</button>
-            {currentUser.role === 'jobSeeker' && (
-              <>
-                <button onClick={() => setActiveTab('jobs')} style={navButtonStyle}>{text('browseJobs')}</button>
-                <button onClick={() => setActiveTab('training')} style={navButtonStyle}>{text('training')}</button>
-                <button onClick={() => setActiveTab('applications')} style={navButtonStyle}>{text('applications')}</button>
-              </>
-            )}
-            {currentUser.role === 'employer' && (
-              <button onClick={() => setActiveTab('employer')} style={navButtonStyle}>{text('postJob')}</button>
-            )}
-            {currentUser.role === 'admin' && (
-              <button onClick={() => setActiveTab('users')} style={navButtonStyle}>{text('users')}</button>
-            )}
-            <button onClick={() => setActiveTab('notifications')} style={navButtonStyle}>{text('notifications')}</button>
-            <button onClick={() => setActiveTab('profile')} style={navButtonStyle}>{text('profile')}</button>
+            <button onClick={() => setActiveTab('jobs')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'jobs' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'jobs' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Browse Jobs</button>
+            <button onClick={() => setActiveTab('training')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'training' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'training' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Training Modules</button>
+            <button onClick={() => setActiveTab('applications')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'applications' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'applications' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>My Applications</button>
           </>
         )}
-      </nav>
 
-      <main style={{ maxWidth: '900px', margin: '20px auto', padding: '0 15px' }}>
-        
-        {/* Auth View */}
-        {!isLoggedIn && activeTab === 'join' && (
-          <div style={cardStyle}>
-            <h2>{text('createAccount')}</h2>
-            <div style={{marginBottom: 10}}>
-              <button onClick={() => setSignupRole('jobSeeker')} style={{...smallButtonStyle, background: signupRole === 'jobSeeker' ? '#1e3a8a' : '#94a3b8', marginRight: 5}}>{text('asJobSeeker')}</button>
-              <button onClick={() => setSignupRole('employer')} style={{...smallButtonStyle, background: signupRole === 'employer' ? '#1e3a8a' : '#94a3b8'}}>{text('asEmployer')}</button>
-            </div>
-            <form onSubmit={handleSignup}>
-              <input name="name" value={signupData.name} onChange={handleSignupChange} placeholder={text('fullName')} style={inputStyle} />
-              {fieldError(signupValidationErrors.name)}
-              <input name="email" value={signupData.email} onChange={handleSignupChange} placeholder={text('email')} style={inputStyle} />
-              {fieldError(signupValidationErrors.email)}
-              <input name="password" type="password" value={signupData.password} onChange={handleSignupChange} placeholder={text('password')} style={inputStyle} />
-              {fieldError(signupValidationErrors.password)}
-              {signupRole === 'jobSeeker' && (
-                <div style={{marginTop: 10}}>
-                  <label>{text('resume')}</label>
-                  <input type="file" onChange={(e) => setSignupResume(e.target.files[0])} style={inputStyle} />
+        <button onClick={() => setActiveTab('profile')} style={{ padding: '12px 24px', margin: '0 8px', background: activeTab === 'profile' ? '#1e3a8a' : '#e2e8f0', color: activeTab === 'profile' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Profile</button>
+      </div>
+
+      {/* Join/Login */}
+      {activeTab === 'join' && !isLoggedIn && (
+        <div style={{ maxWidth: '600px', margin: '0 auto', background: 'white', padding: '40px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}>
+          <h2 style={{ textAlign: 'center' }}>Join or Login</h2>
+          <div style={{ marginBottom: '15px' }}>
+            <button onClick={() => setRole('jobSeeker')} style={{ marginRight: '10px', padding: '10px 20px', background: role === 'jobSeeker' ? '#1e3a8a' : '#e2e8f0', color: role === 'jobSeeker' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px' }}>Job Seeker</button>
+            <button onClick={() => setRole('employer')} style={{ padding: '10px 20px', background: role === 'employer' ? '#1e3a8a' : '#e2e8f0', color: role === 'employer' ? 'white' : '#1e3a8a', border: 'none', borderRadius: '8px' }}>Employer</button>
+          </div>
+
+          <form onSubmit={handleSignup} encType="multipart/form-data">
+            <input type="text" placeholder={role === 'jobSeeker' ? "Full Name" : "Company Name"} value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+            {role === 'jobSeeker' && (
+              <>
+                <select value={skills} onChange={(e) => setSkills(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ccc' }} required>
+                  <option value="">Select skill</option>
+                  <option value="English Speaking">English Speaking</option>
+                  <option value="Customer Support">Customer Support</option>
+                  <option value="Graphic Design">Graphic Design</option>
+                  <option value="Writing">Writing</option>
+                  <option value="Virtual Assistant">Virtual Assistant</option>
+                </select>
+                <div style={{ marginBottom: '20px' }}>
+                  <label>Resume (PDF/Doc) <span style={{ color: 'red' }}>*</span></label><br />
+                  <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => { if (e.target.files[0]) { setResume(e.target.files[0]); setResumeName(e.target.files[0].name); } }} required />
+                  {resumeName && <p style={{ color: 'green' }}>Selected: {resumeName}</p>}
                 </div>
-              )}
-              <button type="submit" style={primaryButtonStyle} disabled={signupLoading}>{signupLoading ? '...' : text('signUp')}</button>
-            </form>
-            <hr style={{margin: '20px 0'}} />
-            <h2>{text('login')}</h2>
+              </>
+            )}
+            <button type="submit" disabled={signupLoading} style={{ width: '100%', padding: '14px', background: signupLoading ? '#666' : '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>
+              {signupLoading ? 'Creating...' : `Sign Up as ${role === 'jobSeeker' ? 'Job Seeker' : 'Employer'}`}
+            </button>
+          </form>
+          {signupMessage && <p style={{ color: 'green', textAlign: 'center', marginTop: '15px' }}>{signupMessage}</p>}
+          {signupError && <p style={{ color: 'red', textAlign: 'center', marginTop: '15px' }}>{signupError}</p>}
+
+          <div style={{ marginTop: '40px' }}>
+            <h3>Login</h3>
             <form onSubmit={handleLogin}>
-              <input name="email" value={loginData.email} onChange={handleLoginChange} placeholder={text('email')} style={inputStyle} />
-              <input name="password" type="password" value={loginData.password} onChange={handleLoginChange} placeholder={text('password')} style={inputStyle} />
-              <button type="submit" style={primaryButtonStyle}>{text('login')}</button>
+              <input type="email" placeholder="Email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+              <input type="password" placeholder="Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} style={{ width: '100%', padding: '14px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+              <button type="submit" style={{ width: '100%', padding: '14px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>Login</button>
+            </form>
+            {loginError && <p style={{ color: 'red', textAlign: 'center', marginTop: '15px' }}>{loginError}</p>}
+          </div>
+        </div>
+      )}
+
+      {/* Employer Dashboard */}
+      {isLoggedIn && currentUser.role === 'employer' && activeTab === 'employer' && (
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Employer Dashboard</h2>
+          <div style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', marginBottom: '30px' }}>
+            <h3>Post a New Job</h3>
+            <form onSubmit={postJob}>
+              <input name="title" placeholder="Job Title" style={{ width: '100%', padding: '14px', marginBottom: '12px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+              <input name="salary" placeholder="Salary" style={{ width: '100%', padding: '14px', marginBottom: '20px', borderRadius: '8px', border: '1px solid #ccc' }} required />
+              <button type="submit" style={{ width: '100%', padding: '14px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>Post Job</button>
             </form>
           </div>
-        )}
 
-        {/* Dashboard View */}
-        {isLoggedIn && activeTab === 'dashboard' && (
-          <div style={statsGridStyle}>
-            <div style={cardStyle}><h4>Applications</h4><p style={{fontSize: 24, fontWeight: 800}}>{dashboardData?.totalApplications || 0}</p></div>
-            {currentUser.role === 'jobSeeker' && <div style={cardStyle}><h4>Courses Done</h4><p style={{fontSize: 24, fontWeight: 800}}>{dashboardData?.completedCourses || 0}</p></div>}
-            {currentUser.role === 'employer' && <div style={cardStyle}><h4>Jobs Posted</h4><p style={{fontSize: 24, fontWeight: 800}}>{dashboardData?.totalJobs || 0}</p></div>}
-          </div>
-        )}
+          <h3 style={{ textAlign: 'center' }}>Applications Received</h3>
+          {employerApplications.length === 0 ? <p style={{ textAlign: 'center' }}>No applications yet.</p> : (
+            employerApplications.map((app, i) => (
+              <div key={i} style={{ background: 'white', padding: '20px', margin: '15px 0', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                <h4>{app.jobTitle}</h4>
+                <p><strong>Applicant:</strong> {app.name}</p>
+                <p><strong>Email:</strong> {app.email}</p>
+                <p><strong>Status:</strong> <span style={{ color: app.status === 'Accepted' ? 'green' : 'orange' }}>{app.status}</span></p>
+                <button onClick={() => updateApplicationStatus(app._id, 'Accepted')} style={{ marginRight: 10, padding: '8px 16px', background: 'green', color: 'white', border: 'none', borderRadius: '6px' }}>Accept</button>
+                <button onClick={() => updateApplicationStatus(app._id, 'Rejected')} style={{ padding: '8px 16px', background: 'red', color: 'white', border: 'none', borderRadius: '6px' }}>Reject</button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
-        {/* Browse Jobs View */}
-        {isLoggedIn && activeTab === 'jobs' && (
-          <div>
-            <div style={cardStyle}>
-              <h3>{text('filters')}</h3>
-              <input name="keyword" onChange={handleFilterChange} placeholder={text('keywordPlaceholder')} style={inputStyle} />
-              <button onClick={loadJobs} style={primaryButtonStyle}>{text('applyFilters')}</button>
-            </div>
-            {jobs.map(job => (
-              <div key={job._id} style={cardStyle}>
+      {/* Browse Jobs - Job Seeker */}
+      {isLoggedIn && currentUser.role === 'jobSeeker' && activeTab === 'jobs' && (
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{ textAlign: 'center' }}>Available Remote Jobs</h2>
+          {jobs.length === 0 ? <p style={{ textAlign: 'center' }}>No jobs posted yet.</p> : (
+            jobs.map(job => (
+              <div key={job._id} style={{ background: 'white', padding: '25px', marginBottom: '20px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.08)' }}>
                 <h3>{job.title}</h3>
-                <p><strong>{job.company}</strong> | Match: {job.matchScore}%</p>
-                <p>{job.description}</p>
-                <button onClick={() => handleApply(job)} style={primaryButtonStyle}>{text('apply')}</button>
+                <p><strong>{job.company}</strong> • {job.salary}</p>
+                <button onClick={() => handleApply(job.title)} style={{ padding: '12px 28px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>Apply Now</button>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+          {applyMessage && <p style={{ color: 'green', textAlign: 'center' }}>{applyMessage}</p>}
+        </div>
+      )}
 
-        {/* Post Job View (Employer) */}
-        {isLoggedIn && activeTab === 'employer' && (
-          <div style={cardStyle}>
-            <h3>{text('postJob')}</h3>
-            <form onSubmit={handlePostJob}>
-              <input name="title" placeholder={text('title')} required style={inputStyle} />
-              <input name="category" placeholder={text('category')} required style={inputStyle} />
-              <textarea name="description" placeholder="Description" style={textareaStyle} />
-              <button type="submit" style={primaryButtonStyle}>Submit Job</button>
-            </form>
-          </div>
-        )}
+      {/* Training Modules - Job Seeker */}
+      {isLoggedIn && currentUser.role === 'jobSeeker' && activeTab === 'training' && (
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Skill-Building Modules</h2>
+          {trainingModules.map(m => (
+            <div key={m._id} style={{ background: 'white', padding: '25px', marginBottom: '20px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.08)' }}>
+              <h3>{m.title}</h3>
+              <p>{m.description}</p>
+              <button onClick={() => startCourse(m)} style={{ padding: '10px 20px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>Start Course</button>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {/* Notifications View */}
-        {isLoggedIn && activeTab === 'notifications' && (
-          <div>
-            {notifications.length === 0 && <p>No notifications.</p>}
-            {notifications.map(n => (
-              <div key={n._id} style={{...cardStyle, opacity: n.read ? 0.6 : 1}}>
-                <p>{n.message}</p>
-                {!n.read && <button onClick={() => markNotificationRead(n._id)} style={smallButtonStyle}>Mark Read</button>}
-              </div>
-            ))}
-          </div>
-        )}
+      {/* My Applications - Job Seeker */}
+      {isLoggedIn && currentUser.role === 'jobSeeker' && activeTab === 'applications' && (
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h2 style={{ textAlign: 'center' }}>My Applications</h2>
+          {applicationsLoading && <p>Loading...</p>}
+          {!applicationsLoading && applications.length === 0 && <p>No applications yet.</p>}
+          {applications.map((app, i) => (
+            <div key={i} style={{ background: 'white', padding: '20px', margin: '15px 0', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+              <h3>{app.jobTitle}</h3>
+              <p><strong>Date:</strong> {new Date(app.appliedAt).toLocaleDateString()}</p>
+              <p><strong>Status:</strong> <span style={{ color: app.status === 'Accepted' ? 'green' : app.status === 'Rejected' ? 'red' : 'orange' }}>{app.status}</span></p>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {/* Profile View */}
-        {isLoggedIn && activeTab === 'profile' && (
-          <div style={cardStyle}>
-            <h3>{text('profile')}</h3>
-            <form onSubmit={updateProfile}>
-              <input name="name" value={profileForm.name || ''} onChange={handleProfileChange} style={inputStyle} />
-              <input name="phone" value={profileForm.phone || ''} onChange={handleProfileChange} style={inputStyle} />
-              <button type="submit" style={primaryButtonStyle}>Save Profile</button>
-            </form>
-            {profileMessage && <p style={{color: 'green'}}>{profileMessage}</p>}
+      {/* Profile */}
+      {isLoggedIn && activeTab === 'profile' && (
+        <div style={{ maxWidth: '600px', margin: '0 auto', background: 'white', padding: '40px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}>
+          <h2 style={{ textAlign: 'center' }}>My Profile</h2>
+          <div style={{ background: '#f8fafc', padding: '25px', borderRadius: '10px' }}>
+            <p><strong>Name:</strong> {currentUser.name}</p>
+            <p><strong>Email:</strong> {currentUser.email}</p>
           </div>
-        )}
+        </div>
+      )}
 
-      </main>
+      {/* Training Modal */}
+      {showTrainingModal && currentModule && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: 'white', maxWidth: '600px', width: '90%', padding: '30px', borderRadius: '12px' }}>
+            <h2>{currentModule.title}</h2>
+            <p>{currentModule.description}</p>
+            <div style={{ display: 'flex', gap: '15px', marginTop: '30px' }}>
+              <button onClick={() => setShowTrainingModal(false)} style={{ flex: 1, padding: '14px', background: '#e2e8f0', border: 'none', borderRadius: '8px' }}>Close</button>
+              <button onClick={() => markAsCompleted(currentModule)} style={{ flex: 1, padding: '14px', background: '#1e3a8a', color: 'white', border: 'none', borderRadius: '8px' }}>Mark as Completed</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default App;
